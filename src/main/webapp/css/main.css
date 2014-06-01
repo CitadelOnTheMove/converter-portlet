@@ -1,0 +1,90 @@
+.category-contextDiv,.context-contextDiv,.sourceColumn-contextDiv {
+	color: #FFFFFF;
+	margin-right: 2px;
+	background-color: #3A87AD;
+	border-radius: 3px;
+	display: inline-block;
+	font-size: 11.844px;
+	font-weight: bold;
+	line-height: 14px;
+	padding: 2px 4px;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+	vertical-align: baseline;
+	white-space: nowrap;
+}
+
+.category-contextRemove,.context-contextRemove,.sourceColumn-contextRemove
+	{
+	content: "x";
+	padding-right: 2px;
+	padding-left: 6px;
+}
+
+.category-contextRemove:HOVER,.context-contextRemove:HOVER,.sourceColumn-contextRemove
+	{
+	cursor: pointer;
+	color: #000000;
+}
+
+.inputPlainText {
+	margin: 4px 0px;
+}
+
+.view-header {
+	background-color: #F0EFEF;
+	border-radius: 4px;
+	font-size: larger;
+	font-weight: bold;
+	margin: 0 15px;
+	padding: 10px;
+}
+
+td.contentClass div.control-group {
+	margin: 0px;
+}
+
+pre.code {
+	font-family: consolas, courier, monospace;
+	font-size: 1em;
+	line-height: 1.2em;
+	white-space: pre;
+	background-color: #ccf;
+	color: #000;
+	border: 1px solid #666;
+	padding: 1em;
+	margin: 1.2em 1em;
+	width: 90%;
+	margin: auto;
+	margin-top: 2em;
+	max-height: 20em;
+	overflow: auto;
+}
+
+ul.tree-container li.tree-node {
+	line-height: 0px;
+}
+
+.citadel-navigation-menu {
+	text-align: right;
+}
+
+.view-info {
+	margin-bottom: 20px;
+	margin-top: 10px;
+}
+
+
+.navbar.navbar-static-top.dockbar{
+    display: none;
+}
+.powered-by{
+    display: none;
+}
+
+#wrapper > header {
+    display: none;
+}
+
+#content > nav {
+    display: none;
+}
