@@ -24,7 +24,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.util.Base64;
+import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Validator;
 
 import eu.citadel.converter.data.Data;
 import eu.citadel.converter.data.dataset.Dataset;
@@ -47,6 +49,8 @@ import eu.citadel.liferay.portlet.dto.TransformationDto;
  */
 /*Step 7*/
 public class ContrSaveFile extends ConverterController {
+	private static final String LINK_ERROR = "https://github.com/CitadelOnTheMove/converter-lib/wiki/Troubleshooting";
+
 	private static Log _log = ConverterPortlet.getLogger();
 	
 	private static final int JSON_PREVIEW_SIZE = 5;
@@ -58,7 +62,9 @@ public class ContrSaveFile extends ConverterController {
 	public static final String VIEW_ATTRIBUTE_OBJECT_PREVIEW	= "view_attribute_object_preview";
 	public static final String VIEW_ATTRIBUTE_DOWNLOAD_LINK		= "view_attribute_download_link";
 	public static final String VIEW_ATTRIBUTE_MESSAGE_ERROR		= "view_attribute_message_error";
-
+	public static final String VIEW_ATTRIBUTE_LINK_ERROR		= "view_attribute_link_error";
+	public static final String VIEW_ATTRIBUTE_KEY_ERROR			= "view_attribute_key_error";
+	
 	@Override
 	public ExtViewResult doView(RenderRequest request, RenderResponse response) throws IOException, PortletException {
 		String resultOutput = "";
@@ -83,13 +89,7 @@ public class ContrSaveFile extends ConverterController {
 				_log.error("session: " + request.getPortletSession().getId() +" error: Impossibile salvare il file");
 			}
 			String downloadLink = Base64.encode(fileEntry.getAbsolutePath().getBytes());
-			_log.debug("Originale");
-			System.out.println(resultOutput);
-			_log.debug(resultOutput);
 			resultOutput = ConverterUtils.reduceJson(resultOutput, JSON_PREVIEW_SIZE);
-			_log.debug("Ridotto");
-			_log.debug(resultOutput);
-			System.out.println(resultOutput);
 			
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			JsonParser jp = new JsonParser();
@@ -103,7 +103,20 @@ public class ContrSaveFile extends ConverterController {
 			return new ExtViewResult(ConverterPortlet.CONTR_SAVE_FILE);
 		} catch (ConverterException e) {
 			_log.error("session: " + request.getPortletSession().getId() +" error: "+ e.getLocalizedMessage(getLocale(request)));
-			request.setAttribute(VIEW_ATTRIBUTE_MESSAGE_ERROR, e.getMessage());
+			String key  = "error";
+			String msg  = e.getMessage();
+			String link = LINK_ERROR;
+			
+			if(e.getTranslationKey().contains(" ")) {
+				link += "#validation";
+				key   = "validation";
+			} else if(e.getTranslationKey() != null)  {
+				link += "#" + e.getTranslationKey();
+				key   = e.getTranslationKey();
+			};
+			request.setAttribute(VIEW_ATTRIBUTE_LINK_ERROR, HtmlUtil.escapeHREF(link));
+			request.setAttribute(VIEW_ATTRIBUTE_MESSAGE_ERROR, msg);
+			request.setAttribute(VIEW_ATTRIBUTE_KEY_ERROR, key);
 			return new ExtViewResult(ConverterPortlet.CONTR_SAVE_FILE);
 		} catch (Exception e) {
 			_log.error("session: " + request.getPortletSession().getId() +" error: "+ e.getMessage());

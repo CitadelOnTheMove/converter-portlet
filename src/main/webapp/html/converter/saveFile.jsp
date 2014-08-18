@@ -13,6 +13,8 @@
 <%
 String downloadLink = (String) renderRequest.getAttribute(VIEW_ATTRIBUTE_DOWNLOAD_LINK);
 String err 			= (String) renderRequest.getAttribute(VIEW_ATTRIBUTE_MESSAGE_ERROR);
+String errKey		= (String) renderRequest.getAttribute(VIEW_ATTRIBUTE_KEY_ERROR);
+String errLink		= (String) renderRequest.getAttribute(VIEW_ATTRIBUTE_LINK_ERROR);
 if(Validator.isNull(err)){
 %>	
 	<liferay-portlet:resourceURL id="saveFile_download" var="downloadUrl">
@@ -23,18 +25,18 @@ if(Validator.isNull(err)){
 	<div class="view-info"><liferay-ui:message key="save-file-info"/></div>
 	<pre class="code"><%= renderRequest.getAttribute(VIEW_ATTRIBUTE_OBJECT_PREVIEW) %></pre>
 	<aui:button-row>
+		<%String linkPrev = HtmlUtil.escapeHREF("http://demos.citadelonthemove.eu/app-generator/index.php?preview=true&converterdatasetID=" + downloadLink);%>
+		<aui:button type="button" cssClass="btn-primary" value="save-file-preview-btn" onClick="<%= \"window.open('\" + linkPrev + \"');\" %>"	/>
+		<liferay-ui:message key="save-file-if-you-can-see-your-data-properly-you-can"/>
 		<aui:button cssClass="btn-primary" value="save-file-download-file" 	    href="<%= downloadUrl %>"		/>
 		<liferay-ui:message key="save-file-and-then"/>
 		<%String link = HtmlUtil.escapeHREF("http://www.citadelonthemove.eu/en-us/opendata/uploadmydataset.aspx");%>
 		<aui:button type="button" cssClass="btn-primary" value="save-file-publish" onClick="<%= \"window.open('\" + link + \"');\" %>"	/>
-		<liferay-ui:message key="save-file-or-see-a-preview"/>
-		<%String linkPrev = HtmlUtil.escapeHREF("http://demos.citadelonthemove.eu/app-generator/index.php?preview=true&converterdatasetID=" + downloadLink);%>
-		<aui:button type="button" cssClass="btn-primary" value="save-file-preview-btn" onClick="<%= \"window.open('\" + linkPrev + \"');\" %>"	/>
 	</aui:button-row>
 <%
 }else{
 %>
-	<div class="alert alert-error"><%= err.replace(". ", ".<br/>") %></div>
+	<div class="alert alert-error"><a style="cursor: pointer;" onclick="<%= "window.open('" + errLink + "');" %>"><%= errKey %></a>:<%= err.replace(". ", ".<br/>") %></div>
 <%
 }
 %>

@@ -49,14 +49,21 @@ public class ContrChooseDataset extends ConverterController {
 	
 	@Override
 	public ExtViewResult nextStep(ActionRequest request,	ActionResponse actionResponse)  {
-		int fileId 			= ParamUtil.getInteger(request, RowChecker.ROW_IDS);
+		String fileId 			= ParamUtil.getString(request, RowChecker.ROW_IDS);
 
 		List<File> list = ConverterUtils.getUploadedFileList(request);
-		if (list.size() < fileId) {
+		if (list.size() <= 0) {
 			return new ExtViewResult(ConverterPortlet.CONTR_CHOOSE_DATA);
 		}
 
-		File file = list.get(fileId);
+		File file = list.get(0);
+		for (File f : list) {
+			if(fileId.equals(f.getName())) {
+				file = f;
+				break;
+			}
+		}
+
 		Path path = file.toPath();
 		String dataType = DatasetType.detect(path);
 		//Create dataType
