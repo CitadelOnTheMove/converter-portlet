@@ -1,4 +1,4 @@
-package eu.citadel.liferay.portlet.converter;
+package eu.citadel.liferay.portlet.converter.controller;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +14,6 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import com.liferay.portal.kernel.dao.search.RowChecker;
-import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.util.ParamUtil;
 
 import eu.citadel.converter.data.dataset.CsvDataset;
@@ -23,6 +22,8 @@ import eu.citadel.converter.data.dataset.DatasetType;
 import eu.citadel.converter.data.dataset.ExcelDataset;
 import eu.citadel.liferay.extendedmvc.ExtViewResult;
 import eu.citadel.liferay.portlet.commons.ConverterUtils;
+import eu.citadel.liferay.portlet.converter.ConverterPortlet;
+import eu.citadel.liferay.portlet.converter.general.ConverterController;
 import eu.citadel.liferay.portlet.dto.DatasetDto;
 
 /**
@@ -30,8 +31,6 @@ import eu.citadel.liferay.portlet.dto.DatasetDto;
  */
 /*Step 2*/
 public class ContrChooseDataset extends ConverterController {
-	private static Log _log = ConverterPortlet.getLogger();
-
 	private static final String JSP_MAIN_PATH 				= "/html/converter/chooseDataset.jsp";
 
 	public static final String CONTR_PARAM_SELECTED_FILES 	= "contr_param_selected_files";
@@ -67,7 +66,7 @@ public class ContrChooseDataset extends ConverterController {
 		Path path = file.toPath();
 		String dataType = DatasetType.detect(path);
 		//Create dataType
-		_log.debug("session: " + request.getPortletSession().getId() +" selected mimeType: " + dataType);
+		getLog(request).debug("selected mimeType: " + dataType);
 		Dataset ds = null;
 		if (dataType.equals(DatasetType.TYPE_EXCEL)) {
 			ds = new ExcelDataset(path);

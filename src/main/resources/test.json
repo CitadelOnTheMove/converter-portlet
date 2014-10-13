@@ -1,1 +1,54 @@
-{"dataset":{"id":-1667835006,"created":"2014-02-07T20:28:16+00:00","updated":"2014-02-07T20:28:16+00:00","lang":"de-ATde-AT","author":{"id":"author-id", "value":"dddddd"},"license":{},"link":{"href":"","term":"source"},"updatefrequency":"","poi":[{"id":"","title":"dddddd","description":"","category":["dd","dd"],"location":{"point":{"term":"centroid","pos":{"srsName":"http:\/\/www.opengis.net\/def\/crs\/EPSG\/0\/4326http:\/\/www.opengis.net\/def\/crs\/EPSG\/0\/4326","posList":"dddddd"}},"address":{"value":"dd","postal":null,"city":null}},"attribute":[]}]}
+{
+    "resource_id": "6a7f5a90-cf85-444b-ac5c-6f5b509ae4f1",
+    "force": "True",
+    "method": "insert",
+    "records": [
+        {
+            "field_location_city": "Cervia",
+            "field_poi_id": "1",
+            "field_website": "["[
+                
+            ]"]",
+            "field_neighborhood": "pinarella",
+            "field_email": "["[
+                
+            ]"]",
+            "field_location_longitude": "13.5",
+            "field_phone": "["[
+                
+            ]"]",
+            "field_body": "descrizione pasticceria",
+            "field_location_address_first_line": "SS Adriatica",
+            "field_category_places": "pasticceria",
+            "field_photographs": "["[
+                
+            ]"]",
+            "field_location_address_second_line": "",
+            "field_location_latitude": "45.4",
+            "field_location_country": "Italy",
+            "field_title": "rosa"
+        },
+        {
+            "field_location_city": "Cervia",
+            "field_poi_id": "2",
+            "field_website": "[]",
+            "field_neighborhood": "pinarella",
+            "field_email": "["[
+                alpha@beta.com
+            ]"]",
+            "field_location_longitude": "13.2",
+            "field_phone": "["[
+                \"+39123456789\",
+                \"+39987654321\"
+            ]"]",
+            "field_body": "descrizione casa",
+            "field_location_address_first_line": "via pinarella",
+            "field_category_places": "casa",
+            "field_photographs": "[]",
+            "field_location_address_second_line": "99ter",
+            "field_location_latitude": "45.3",
+            "field_location_country": "Italy",
+            "field_title": "nonni"
+        }
+    ]
+}

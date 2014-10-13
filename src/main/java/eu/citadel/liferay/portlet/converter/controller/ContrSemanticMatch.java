@@ -1,7 +1,7 @@
-package eu.citadel.liferay.portlet.converter;
+package eu.citadel.liferay.portlet.converter.controller;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,19 +13,22 @@ import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 
+import eu.citadel.converter.data.dataset.CsvDataset;
 import eu.citadel.converter.data.dataset.CsvDatasetContentBuilder;
 import eu.citadel.converter.data.dataset.CsvType;
+import eu.citadel.converter.data.dataset.DatasetStatus;
 import eu.citadel.converter.data.dataset.DatasetType;
+import eu.citadel.converter.data.dataset.ExcelDataset;
 import eu.citadel.converter.data.dataset.ExcelDatasetContentBuilder;
 import eu.citadel.converter.data.dataset.ExcelType;
-import eu.citadel.converter.data.datatype.BasicDatatype;
 import eu.citadel.converter.data.metadata.BasicMetadataUtils;
-import eu.citadel.converter.exceptions.ExcelDatasetException;
+import eu.citadel.converter.exceptions.DatasetException;
 import eu.citadel.liferay.extendedmvc.ExtViewResult;
+import eu.citadel.liferay.portlet.converter.ConverterPortlet;
+import eu.citadel.liferay.portlet.converter.general.ConverterController;
 import eu.citadel.liferay.portlet.dto.DatasetDto;
 import eu.citadel.liferay.portlet.dto.MetadataDto;
 
@@ -34,7 +37,6 @@ import eu.citadel.liferay.portlet.dto.MetadataDto;
  */
 /*Step 4*/
 public class ContrSemanticMatch extends ConverterController {
-	private static Log _log = ConverterPortlet.getLogger();
 	private static final String JSP_MAIN_PATH 				= "/html/converter/semanticMatch.jsp";
 
 	public static final String CONTR_PARAM_SELECTED_FILES 	= "contr_param_selected_files";
@@ -54,8 +56,8 @@ public class ContrSemanticMatch extends ConverterController {
 		List<MetadataDto> dtoList;
 		try {
 			dtoList = getList(request, ds);
-		} catch (ExcelDatasetException e) {
-			_log.error("session: " + request.getPortletSession().getId() +" error: " + e.getLocalizedMessage(getLocale(request)));
+		} catch (DatasetException e) {
+			getLog(request).error("error: " + e.getLocalizedMessage(getLocale(request)));
 			return new ExtViewResult(ConverterPortlet.CONTR_SEMANTIC_MATCH);
 		}
 		setMetadataDto(request, dtoList);
@@ -68,11 +70,19 @@ public class ContrSemanticMatch extends ConverterController {
 		return new ExtViewResult(ConverterPortlet.CONTR_SEMANTIC_MATCH);
 	}
 
-	private List<MetadataDto> getList(PortletRequest request, DatasetDto ds) throws ExcelDatasetException, IOException {
+	private List<MetadataDto> getList(PortletRequest request, DatasetDto ds) throws IOException, DatasetException {
 		List<MetadataDto> ret = new ArrayList<MetadataDto>();
-		if(ds.getDataset().getType().equals(DatasetType.TYPE_EXCEL)) {
+		if(getMetadataDto(request) != null && getMetadataDto(request).size() > 0){
+			//If Metatadata dto is already saved reuse it
+			return getMetadataDto(request);
+		} else if(ds.getDataset().getType().equals(DatasetType.TYPE_EXCEL)) {
 			ExcelDatasetContentBuilder cb = new ExcelDatasetContentBuilder();
-			cb.setPath(new File(ds.getFile()).toPath());
+			((ExcelDataset)ds.getDataset()).buildContent();
+			try { 
+				cb.setPath((Path) ds.getDataset().getInternalStateObject(DatasetStatus.STATUS_PATH));
+			} catch (DatasetException e) {
+				cb.setPath((Path) ds.getDataset().getInternalStateObject(DatasetStatus.STATUS_TEMPPATH));
+			}
 			cb.setLines(ds.getItemNumber());
 			ExcelType excelType = new ExcelType(ds.getSheetNumber());
 			cb.setExcelType(excelType);
@@ -92,7 +102,7 @@ public class ContrSemanticMatch extends ConverterController {
 						example =  lstFirst.get(i);
 					}
 				}catch(IndexOutOfBoundsException e){			
-					_log.debug("session: " + request.getPortletSession().getId() +" error: " + e.getMessage());
+					getLog(request).debug("error: " + e.getMessage());
 				}
 				if(header == null) header = "";
 				if(example == null) example = "";
@@ -100,7 +110,12 @@ public class ContrSemanticMatch extends ConverterController {
 			}
 		} else if (ds.getDataset().getType().equals(DatasetType.TYPE_CSV)) {		
 			CsvDatasetContentBuilder cb = new CsvDatasetContentBuilder();
-			cb.setPath(new File(ds.getFile()).toPath());
+			((CsvDataset)ds.getDataset()).buildContent();
+			try { 
+				cb.setPath((Path) ds.getDataset().getInternalStateObject(DatasetStatus.STATUS_PATH));
+			} catch (DatasetException e) {
+				cb.setPath((Path) ds.getDataset().getInternalStateObject(DatasetStatus.STATUS_TEMPPATH));
+			}
 			cb.setLines(ds.getItemNumber());
 			CsvType csvType = null;
 			if (ds.getDelimiter().equals(",")) {
@@ -145,13 +160,13 @@ public class ContrSemanticMatch extends ConverterController {
 		}
 		
 		//TEMPORANEO per il momento salto choose export
-		setSelectedBasicDatatype(actionRequest, BasicDatatype.getAvailableBasicDatatype().get(0));
-		_log.debug("session: " + actionRequest.getPortletSession().getId() +" selected export type: " + 0);
-		return new ExtViewResult(ConverterPortlet.CONTR_EXPORT_SCHEMA);
+//		setSelectedBasicDatatype(actionRequest, BasicDatatype.getAvailableBasicDatatype().get(0));
+//		_log.debug("session: " + actionRequest.getPortletSession().getId() +" selected export type: " + 0);
+//		return new ExtViewResult(ConverterPortlet.CONTR_EXPORT_SCHEMA);
 		
 		
 		
-//		return new ExtViewResult(ConverterPortlet.CONTR_CHOOSE_EXPORT);
+		return new ExtViewResult(ConverterPortlet.CONTR_CHOOSE_EXPORT);
 	}
 
 	@Override

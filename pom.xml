@@ -6,7 +6,7 @@
 	<artifactId>converter</artifactId>
 	<packaging>war</packaging>
 	<name>converter Portlet</name>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.2-SNAPSHOT</version>
 	<properties>
 		<liferay.auto.deploy.dir>/home/thomas/Documents/liferay/deploy</liferay.auto.deploy.dir>
 		<liferay.version>6.2.0-ga1</liferay.version>
@@ -33,6 +33,7 @@
 					</execution>
 				</executions>
 				<configuration>
+
 					<autoDeployDir>${liferay.auto.deploy.dir}</autoDeployDir>
 					<appServerDeployDir>${liferay.app.server.deploy.dir}</appServerDeployDir>
 					<appServerLibGlobalDir>${liferay.app.server.lib.global.dir}</appServerLibGlobalDir>
@@ -148,7 +149,7 @@
 		<dependency>
 			<groupId>eu.citadel.project</groupId>
 			<artifactId>converter</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>${project.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.tika</groupId>
@@ -185,6 +186,22 @@
 				<exclusion>
 					<groupId>commons-collections</groupId>
 					<artifactId>commons-collections</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-collections</groupId>
+					<artifactId>commons-collections</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.antlr</groupId>
+					<artifactId>antlr4</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.httpcomponents</groupId>
+					<artifactId>httpclient</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.httpcomponents</groupId>
+					<artifactId>httpmime</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

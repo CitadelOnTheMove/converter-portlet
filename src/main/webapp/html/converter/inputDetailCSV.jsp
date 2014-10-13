@@ -1,12 +1,12 @@
 <%@page import="eu.citadel.converter.data.metadata.BasicMetadataUtils"%>
 <%@page import="eu.citadel.converter.localization.Messages"%>
-<%@page import="eu.citadel.liferay.portlet.converter.ContrInputDetail"%>
-<%@page import="eu.citadel.liferay.portlet.converter.ContrChooseDataset"%>
+<%@page import="eu.citadel.liferay.portlet.converter.controller.ContrInputDetail"%>
+<%@page import="eu.citadel.liferay.portlet.converter.controller.ContrChooseDataset"%>
 <%@page import="com.liferay.portal.kernel.dao.search.SearchContainer"%>
 <%@page import="eu.citadel.liferay.extendedmvc.ExtMVCListController"%>
 <%@page import="eu.citadel.liferay.portlet.converter.ConverterPortlet"%>
 <%@page import="eu.citadel.liferay.extendedmvc.ExtMVCPortlet"%>
-<%@page import="static eu.citadel.liferay.portlet.converter.ContrInputDetail.*"%>
+<%@page import="static eu.citadel.liferay.portlet.converter.controller.ContrInputDetail.*"%>
 <%@include file="../init.jsp"%>
 
 <%
@@ -14,7 +14,7 @@
 	Map<String, String> delimiterList	= (Map<String, String>) renderRequest.getAttribute(PAGE_ATTRIBUTE_DELIMITER_MAP	);
 	
 	Boolean firstRow 	= (Boolean) renderRequest.getAttribute(PAGE_ATTRIBUTE_FIRST_ROW_HEADER_VAL	);
-	Integer itemNumber	= (Integer) renderRequest.getAttribute(PAGE_ATTRIBUTE_ITEM_NUMBER_VAL		);
+	int		itemNumber	= (Integer) renderRequest.getAttribute(PAGE_ATTRIBUTE_ITEM_NUMBER_VAL		);
 	String  delimiter	= (String)  renderRequest.getAttribute(PAGE_ATTRIBUTE_DELIMITER_VAL			);
 	String 	selectedFile= (String)  renderRequest.getParameter(ContrChooseDataset.CONTR_PARAM_SELECTED_FILES);
 %>

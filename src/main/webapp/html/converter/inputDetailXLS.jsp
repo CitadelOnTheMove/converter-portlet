@@ -1,13 +1,13 @@
 <%@page import="eu.citadel.converter.data.metadata.BasicMetadataUtils"%>
 <%@page import="eu.citadel.converter.localization.Messages"%>
-<%@page import="eu.citadel.liferay.portlet.converter.ContrSemanticMatch"%>
-<%@page import="eu.citadel.liferay.portlet.converter.ContrInputDetail"%>
-<%@page import="eu.citadel.liferay.portlet.converter.ContrChooseDataset"%>
+<%@page import="eu.citadel.liferay.portlet.converter.controller.ContrSemanticMatch"%>
+<%@page import="eu.citadel.liferay.portlet.converter.controller.ContrInputDetail"%>
+<%@page import="eu.citadel.liferay.portlet.converter.controller.ContrChooseDataset"%>
 <%@page import="com.liferay.portal.kernel.dao.search.SearchContainer"%>
 <%@page import="eu.citadel.liferay.extendedmvc.ExtMVCListController"%>
 <%@page import="eu.citadel.liferay.portlet.converter.ConverterPortlet"%>
 <%@page import="eu.citadel.liferay.extendedmvc.ExtMVCPortlet"%>
-<%@page import="static eu.citadel.liferay.portlet.converter.ContrInputDetail.*"%>
+<%@page import="static eu.citadel.liferay.portlet.converter.controller.ContrInputDetail.*"%>
 <%@include file="../init.jsp"%>
 
 <%
@@ -15,8 +15,8 @@
  	Map<Integer, String> sheetList 	= (Map<Integer, String>)  renderRequest.getAttribute(PAGE_ATTRIBUTE_SHEET_MAP);
 
 	Boolean firstRow 	= (Boolean) renderRequest.getAttribute(PAGE_ATTRIBUTE_FIRST_ROW_HEADER_VAL	);
-	Integer itemNumber	= (Integer) renderRequest.getAttribute(PAGE_ATTRIBUTE_ITEM_NUMBER_VAL		);
-	Integer sheet		= (Integer) renderRequest.getAttribute(PAGE_ATTRIBUTE_SHEET_VAL				);
+	int 	itemNumber	= (Integer) renderRequest.getAttribute(PAGE_ATTRIBUTE_ITEM_NUMBER_VAL		);
+	int		sheet		= (Integer) renderRequest.getAttribute(PAGE_ATTRIBUTE_SHEET_VAL				);
 	String 	selectedFile= (String)  renderRequest.getParameter(ContrChooseDataset.CONTR_PARAM_SELECTED_FILES);
 %>
 <liferay-portlet:renderURL var="filterUrl">
@@ -51,8 +51,8 @@
 				</aui:column>
 				<aui:column>			
 					<aui:select name="<%= CONTR_PARAM_ITEM_NUMBER %>" label="input-detail-excel-number-of-preview-row">
-						<aui:option label="3"  value="3"  selected="<%= 3 == itemNumber %>"/>
-						<aui:option label="5"  value="5"  selected="<%= 5 == itemNumber %>"/>
+						<aui:option label="3"  value="3"  selected="<%=  3 == itemNumber %>"/>
+						<aui:option label="5"  value="5"  selected="<%=  5 == itemNumber %>"/>
 						<aui:option label="10" value="10" selected="<%= 10 == itemNumber %>"/>
 					</aui:select>
 				</aui:column>

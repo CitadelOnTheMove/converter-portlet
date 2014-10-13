@@ -1,4 +1,4 @@
-package eu.citadel.liferay.portlet.converter;
+package eu.citadel.liferay.portlet.converter.controller;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,18 +11,18 @@ import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.util.ParamUtil;
 
 import eu.citadel.converter.data.datatype.BasicDatatype;
 import eu.citadel.liferay.extendedmvc.ExtViewResult;
+import eu.citadel.liferay.portlet.converter.ConverterPortlet;
+import eu.citadel.liferay.portlet.converter.general.ConverterController;
 
 /**
  * @author ttrapanese
  */
 /*Step 5 - Disabled*/
 public class ContrChooseExport extends ConverterController {
-	private static Log _log = ConverterPortlet.getLogger();
 	//View path
 	private static final String JSP_MAIN_PATH 				= "/html/converter/chooseExport.jsp";
 
@@ -54,7 +54,7 @@ public class ContrChooseExport extends ConverterController {
 	public ExtViewResult nextStep(ActionRequest request, ActionResponse actionResponse) {
 		int exportType = ParamUtil.getInteger(request, CONTR_PARAM_SELECTED_TYPE);
 		setSelectedBasicDatatype(request, BasicDatatype.getAvailableBasicDatatype().get(exportType));
-		_log.debug("session: " + request.getPortletSession().getId() +" selected export type: " + exportType);
+		getLog(request).debug("selected export type: " + exportType);
 		return new ExtViewResult(ConverterPortlet.CONTR_EXPORT_SCHEMA);
 	}
 }

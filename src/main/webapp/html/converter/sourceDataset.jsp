@@ -10,13 +10,18 @@
 
 <portlet:actionURL var="submitFileAction" name="sourceData_submitFile"/>
 <portlet:actionURL var="submitFileAndConvertAction" name="sourceData_submitFileAndConvert"/>
-<!-- 	TEMPORANEO -->
+<portlet:actionURL var="submitUrlAndConvertAction" name="sourceData_submitUrlAndConvert"/>
+<!-- 	TEMPORANEO --> 
 <script type="text/javascript" charset="utf-8">
-function submitForm(action){
+function <portlet:namespace/>submitForm(action){
   if(action==0){
-     AUI().one('#<portlet:namespace/>form').set('action',"<%= submitFileAction %>");
-  }else{
-	 AUI().one('#<portlet:namespace/>form').set('action',"<%= submitFileAndConvertAction %>");
+	     AUI().one('#<portlet:namespace/>form').set('action',"<%= submitFileAction %>");
+	     AUI().one('#<portlet:namespace/>form').set('enctype',"multipart/form-data");
+  }else if(action==1){
+		 AUI().one('#<portlet:namespace/>form').set('action',"<%= submitFileAndConvertAction %>");
+	     AUI().one('#<portlet:namespace/>form').set('enctype',"multipart/form-data");
+  }else {
+		 AUI().one('#<portlet:namespace/>form').set('action',"<%= submitUrlAndConvertAction %>");
   }
   AUI().one('#<portlet:namespace/>form').submit();
 }
@@ -24,12 +29,24 @@ function submitForm(action){
 
 
 
-<form id="<portlet:namespace/>form" method="post" enctype="multipart/form-data" >
-	<input type="file" id="file" name='<portlet:namespace />file' size="50" />
-	<aui:button cssClass="btn-primary" value="select-source-submit" onClick="submitForm(0)"  />
-	<!-- 	TEMPORANEO -->
-	<aui:button cssClass="btn-primary" value="select-and-convert" 	onClick="submitForm(1)"/>
+<form id="<portlet:namespace/>form" method="post" >
+	<aui:fieldset>
+		<aui:column columnWidth="100">
+			<aui:column>
+					<input type="file" id="file" name='<portlet:namespace />file' size="50" />
+					<aui:button cssClass="btn-primary" value="select-source-submit" onClick="<%= renderResponse.getNamespace() + \"submitForm(0)\"%>"  />
+					<!-- 	TEMPORANEO -->
+					<aui:button cssClass="btn-primary" value="select-and-convert" 	onClick="<%= renderResponse.getNamespace() + \"submitForm(1)\"%>"/>
+			</aui:column>
+			<aui:column>
+					<liferay-ui:message key="select-source-or-insert-url"/>
+					<input type="text" id="fileUrl" name='<portlet:namespace />fileUrl' size="50" />
+					<aui:button cssClass="btn-primary" value="select-url-and-convert" 	onClick="<%= renderResponse.getNamespace() + \"submitForm(2)\"%>"/>
+			</aui:column>
+		</aui:column>
+	</aui:fieldset>
 </form>
+
 
 <liferay-ui:search-container emptyResultsMessage="select-source-no-files-selected" delta="5" >
 	<liferay-ui:search-container-results results="${results}" total="${total}" />		

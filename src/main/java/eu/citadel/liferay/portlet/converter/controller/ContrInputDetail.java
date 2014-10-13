@@ -1,6 +1,5 @@
-package eu.citadel.liferay.portlet.converter;
+package eu.citadel.liferay.portlet.converter.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -14,19 +13,22 @@ import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.util.ParamUtil;
 
 import eu.citadel.converter.data.dataset.CsvDataset;
 import eu.citadel.converter.data.dataset.CsvDatasetContentBuilder;
 import eu.citadel.converter.data.dataset.CsvType;
+import eu.citadel.converter.data.dataset.DatasetStatus;
 import eu.citadel.converter.data.dataset.DatasetType;
 import eu.citadel.converter.data.dataset.ExcelDataset;
 import eu.citadel.converter.data.dataset.ExcelDatasetContentBuilder;
 import eu.citadel.converter.data.dataset.ExcelType;
 import eu.citadel.converter.data.metadata.BasicMetadataUtils;
+import eu.citadel.converter.exceptions.DatasetException;
 import eu.citadel.converter.exceptions.ExcelDatasetException;
 import eu.citadel.liferay.extendedmvc.ExtViewResult;
+import eu.citadel.liferay.portlet.converter.ConverterPortlet;
+import eu.citadel.liferay.portlet.converter.general.ConverterController;
 import eu.citadel.liferay.portlet.dto.DatasetDto;
 
 /**
@@ -34,7 +36,6 @@ import eu.citadel.liferay.portlet.dto.DatasetDto;
  */
 /*Step 3*/
 public class ContrInputDetail extends ConverterController {
-	private static Log _log = ConverterPortlet.getLogger();
 	//VIEW PATH
 	private static final String JSP_CSV_PATH 				= "/html/converter/inputDetailCSV.jsp";
 	private static final String JSP_XLS_PATH 				= "/html/converter/inputDetailXLS.jsp";
@@ -65,7 +66,7 @@ public class ContrInputDetail extends ConverterController {
 	
 	//DEFAULT VALUE
 	public static Boolean DEFAULT_FIRST_ROW_HEADER			= true;
-	public static Integer DEFAULT_ITEM_NUMBER				= 3;
+	public static Integer DEFAULT_ITEM_NUMBER				= 5;
 	
 	public static Integer DEFAULT_SHEET						= 0;
 	public static String  DEFAULT_DELIMITER					= CsvType.DEL_SEMICOLON;
@@ -75,50 +76,67 @@ public class ContrInputDetail extends ConverterController {
 	public ExtViewResult doView(RenderRequest renderRequest, RenderResponse renderResponse) throws IOException, PortletException {
 		DatasetDto ds = getDatasetDto(renderRequest);
 		if(ds.getDataset().getType().equals(DatasetType.TYPE_EXCEL)) {
-			return doXLSdView(new File(ds.getFile()).toPath(), renderRequest, renderResponse);
+			return doXLSdView(ds, renderRequest, renderResponse);
 		} else if (ds.getDataset().getType().equals(DatasetType.TYPE_CSV)) {
-			return doCSVdView(new File(ds.getFile()).toPath(), renderRequest, renderResponse);
+			return doCSVdView(ds, renderRequest, renderResponse);
 		}
 		return new ExtViewResult(ConverterPortlet.CONTR_INPUT_DETAIL, VIEW_UNSUPPORTET_KEY);
 	}
 	
-	private ExtViewResult doXLSdView(Path filePath, RenderRequest request, RenderResponse renderResponse) throws IOException, PortletException {
-		_log.debug("session: " + request.getPortletSession().getId() +" doXLSdView start");
+	private ExtViewResult doXLSdView(DatasetDto ds, RenderRequest request, RenderResponse renderResponse) throws IOException, PortletException {
+		getLog(request).debug("doXLSdView start");
 		//Get settings from page
 		Boolean firstRowHeader 	= ParamUtil.getBoolean	(request, CONTR_PARAM_FIRST_ROW_HEADER	, DEFAULT_FIRST_ROW_HEADER);
 		Integer itemNumber 		= ParamUtil.getInteger	(request, CONTR_PARAM_ITEM_NUMBER		, DEFAULT_ITEM_NUMBER);
 		Integer sheet 			= ParamUtil.getInteger	(request, CONTR_PARAM_SHEET				, DEFAULT_SHEET);
 
-		_log.debug("session: " + request.getPortletSession().getId() +" xls firstRowHeader: " 	+ String.valueOf(firstRowHeader));
-		_log.debug("session: " + request.getPortletSession().getId() +" xls itemNumber: "	 	+ String.valueOf(itemNumber));
-		_log.debug("session: " + request.getPortletSession().getId() +" xls sheet: " 			+ String.valueOf(sheet));
-
-		
-		if(firstRowHeader) itemNumber++;
+		getLog(request).debug("xls firstRowHeader: " 	+ String.valueOf(firstRowHeader));
+		getLog(request).debug("xls itemNumber: "	 	+ String.valueOf(itemNumber));
+		getLog(request).debug("xls sheet: " 			+ String.valueOf(sheet));
 
 		Map<Integer, String> sheetMap;
-		try {
-			ExcelDataset dataset = new ExcelDataset(filePath);
-			sheetMap = dataset.getSheetMap();
-		} catch (ExcelDatasetException e) {
-			_log.error("session: " + request.getPortletSession().getId() +" error: " + e.getLocalizedMessage(getLocale(request)));
-			_log.debug("session: " + request.getPortletSession().getId() +" doXLSdView end");
-			return new ExtViewResult(ConverterPortlet.CONTR_INPUT_DETAIL, VIEW_UNSUPPORTET_KEY);
-		}
+		ExcelDataset dataset = null;
 
 		ExcelType excelType = new ExcelType(sheet);
 		((ExcelDataset)getDatasetDto(request).getDataset()).setExcelType(excelType);
 		
+		try {
+			if(ds.getFileEntry() != null) { 
+				dataset = new ExcelDataset(ds.getFileEntry().toPath());
+			} else {
+				dataset = new ExcelDataset(ds.getUrl());
+			}
+			dataset.setExcelType(excelType);
+			dataset.buildContent();
+			sheetMap = dataset.getSheetMap();
+		} catch (ExcelDatasetException e) {
+			getLog(request).error("error: " + e.getLocalizedMessage(getLocale(request)));
+			getLog(request).debug("doXLSdView end");
+			return new ExtViewResult(ConverterPortlet.CONTR_INPUT_DETAIL, VIEW_UNSUPPORTET_KEY);
+		}
+
+		
 		ExcelDatasetContentBuilder cb = new ExcelDatasetContentBuilder();
-		cb.setPath(filePath);
-		cb.setLines(itemNumber);
+		try { 
+			cb.setPath((Path) dataset.getInternalStateObject(DatasetStatus.STATUS_PATH));
+		} catch (DatasetException e) {
+			try {
+				cb.setPath((Path) dataset.getInternalStateObject(DatasetStatus.STATUS_TEMPPATH));
+			} catch (DatasetException e1) {
+				getLog(request).error("error: " + e1.getLocalizedMessage(getLocale(request)));
+				getLog(request).debug("doXLSdView end");
+				return new ExtViewResult(ConverterPortlet.CONTR_INPUT_DETAIL, VIEW_UNSUPPORTET_KEY);
+			}
+		}
+		
+		cb.setLines(itemNumber + (firstRowHeader ? 1 : 0));
 		cb.setExcelType(excelType);
 		List<List<Object>> list = null;
 		try {
 			list = cb.build();
 		} catch (ExcelDatasetException e) {
-			_log.error("session: " + request.getPortletSession().getId() +" error: " + e.getLocalizedMessage(getLocale(request)));
-			_log.debug("session: " + request.getPortletSession().getId() +" doXLSdView end");
+			getLog(request).error("error: " + e.getLocalizedMessage(getLocale(request)));
+			getLog(request).debug("doXLSdView end");
 			return new ExtViewResult(ConverterPortlet.CONTR_INPUT_DETAIL, VIEW_UNSUPPORTET_KEY);
 		}
 
@@ -130,32 +148,51 @@ public class ContrInputDetail extends ConverterController {
 		}
 		//sent filter value to page
 		request.setAttribute(PAGE_ATTRIBUTE_FIRST_ROW_HEADER_VAL	, firstRowHeader);
-		request.setAttribute(PAGE_ATTRIBUTE_ITEM_NUMBER_VAL			, itemNumber);
+		request.setAttribute(PAGE_ATTRIBUTE_ITEM_NUMBER_VAL			, itemNumber );
 		request.setAttribute(PAGE_ATTRIBUTE_SHEET_VAL				, sheet);
 
 		request.setAttribute(PAGE_ATTRIBUTE_SHEET_MAP				, sheetMap);
-		_log.debug("session: " + request.getPortletSession().getId() +" doXLSdView end");
+		getLog(request).debug("doXLSdView end");
 		return new ExtViewResult(ConverterPortlet.CONTR_INPUT_DETAIL, VIEW_XLS_KEY);
 	}
 
-	private ExtViewResult doCSVdView(Path filePath, RenderRequest request, RenderResponse renderResponse) throws IOException, PortletException {
-		_log.debug("session: " + request.getPortletSession().getId() +" doCSVdView start");
+	private ExtViewResult doCSVdView(DatasetDto ds, RenderRequest request, RenderResponse renderResponse) throws IOException, PortletException {
+		getLog(request).debug("doCSVdView start");
 		//Get settings from page
 		Boolean firstRowHeader 	= ParamUtil.getBoolean	(request, CONTR_PARAM_FIRST_ROW_HEADER	, DEFAULT_FIRST_ROW_HEADER);
 		Integer itemNumber 		= ParamUtil.getInteger	(request, CONTR_PARAM_ITEM_NUMBER		, DEFAULT_ITEM_NUMBER);
 		String  delimiter		= ParamUtil.getString	(request, CONTR_PARAM_DELIMITER			, DEFAULT_DELIMITER);
-		_log.debug("session: " + request.getPortletSession().getId() +" csv firstRowHeader: " 	+ String.valueOf(firstRowHeader));
-		_log.debug("session: " + request.getPortletSession().getId() +" csv itemNumber: "	 	+ String.valueOf(itemNumber));
-		_log.debug("session: " + request.getPortletSession().getId() +" csv delimiter: " 		+ delimiter);
+		getLog(request).debug("csv firstRowHeader: " 	+ String.valueOf(firstRowHeader));
+		getLog(request).debug("csv itemNumber: "	 	+ String.valueOf(itemNumber));
+		getLog(request).debug("csv delimiter: " 		+ delimiter);
 
 		if(firstRowHeader) itemNumber++;
 		
+		CsvDataset dataset = null;
+		if(ds.getFileEntry() != null) { 
+			dataset = new CsvDataset(ds.getFileEntry().toPath());
+		} else {
+			dataset = new CsvDataset(ds.getUrl());
+		}
+
 		CsvType csvType = new CsvType(CsvType.QUOTE_DQUOTE, delimiter, CsvType.EOL_RN);
 		((CsvDataset)getDatasetDto(request).getDataset()).setCsvType(csvType);
 
-
+		dataset.setCsvType(csvType);
+		dataset.buildContent();
+		
 		CsvDatasetContentBuilder cb = new CsvDatasetContentBuilder();
-		cb.setPath(filePath);
+		try { 
+			cb.setPath((Path) dataset.getInternalStateObject(DatasetStatus.STATUS_PATH));
+		} catch (DatasetException e) {
+			try {
+				cb.setPath((Path) dataset.getInternalStateObject(DatasetStatus.STATUS_TEMPPATH));
+			} catch (DatasetException e1) {
+				getLog(request).error("error: " + e1.getLocalizedMessage(getLocale(request)));
+				getLog(request).debug("doXLSdView end");
+				return new ExtViewResult(ConverterPortlet.CONTR_INPUT_DETAIL, VIEW_UNSUPPORTET_KEY);
+			}
+		}
 		cb.setLines(itemNumber);
 		cb.setCsvType(csvType);
 
@@ -173,7 +210,7 @@ public class ContrInputDetail extends ConverterController {
 		request.setAttribute(PAGE_ATTRIBUTE_DELIMITER_VAL			, delimiter);
 
 		request.setAttribute(PAGE_ATTRIBUTE_DELIMITER_MAP		, BasicMetadataUtils.getMap(BasicMetadataUtils.CSV_DELIMITER));
-		_log.debug("session: " + request.getPortletSession().getId() +" doCSVView end");
+		getLog(request).debug("doCSVView end");
 		return new ExtViewResult(ConverterPortlet.CONTR_INPUT_DETAIL, VIEW_CSV_KEY);
 	}
 
@@ -192,7 +229,7 @@ public class ContrInputDetail extends ConverterController {
 	@Override
 	public ExtViewResult nextStep(ActionRequest request, ActionResponse response) {
 		Boolean firstRowHeader 		= ParamUtil.getBoolean	(request, CONTR_PARAM_FIRST_ROW_HEADER	, DEFAULT_FIRST_ROW_HEADER);
-		Integer itemNumber 			= ParamUtil.getInteger	(request, CONTR_PARAM_ITEM_NUMBER			, DEFAULT_ITEM_NUMBER);
+		Integer itemNumber 			= ParamUtil.getInteger	(request, CONTR_PARAM_ITEM_NUMBER		, DEFAULT_ITEM_NUMBER);
 		Integer sheet 				= ParamUtil.getInteger	(request, CONTR_PARAM_SHEET				, DEFAULT_SHEET);
 		String  delimiter			= ParamUtil.getString	(request, CONTR_PARAM_DELIMITER			, DEFAULT_DELIMITER);
 	

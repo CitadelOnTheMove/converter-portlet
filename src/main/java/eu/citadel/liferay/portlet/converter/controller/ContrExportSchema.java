@@ -1,4 +1,4 @@
-package eu.citadel.liferay.portlet.converter;
+package eu.citadel.liferay.portlet.converter.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +16,6 @@ import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 
@@ -31,6 +30,8 @@ import eu.citadel.converter.utils.Matching;
 import eu.citadel.liferay.extendedmvc.ExtViewResult;
 import eu.citadel.liferay.portlet.commons.ConverterUtils;
 import eu.citadel.liferay.portlet.commons.JsonBuilder;
+import eu.citadel.liferay.portlet.converter.ConverterPortlet;
+import eu.citadel.liferay.portlet.converter.general.ConverterController;
 import eu.citadel.liferay.portlet.dto.MetadataDto;
 import eu.citadel.liferay.portlet.dto.TransformationDto;
 
@@ -39,8 +40,6 @@ import eu.citadel.liferay.portlet.dto.TransformationDto;
  */
 /*Step 6*/
 public class ContrExportSchema extends ConverterController {
-	@SuppressWarnings("unused")
-	private static Log _log = ConverterPortlet.getLogger();
 	//View path
 	private static final String JSP_MAIN_PATH 						= "/html/converter/exportSchema.jsp";
 
@@ -51,18 +50,22 @@ public class ContrExportSchema extends ConverterController {
 		
 	@Override
 	public ExtViewResult doView(RenderRequest request, RenderResponse renderResponse) throws IOException, PortletException {
-		ArrayList<TransformationDto> ret = new ArrayList<TransformationDto>();
-		BasicDatatype selectedExport = getSelectedBasicDatatype(request);
-//		DEBUG: BasicDatatype selectedExport = BasicDatatype.getCitadelJson();
-		BasicSchemaObjElements values = selectedExport.getValues();
-		for (Entry<BasicSchemaObjAbstractValue<?>, BasicSchemaObjAttributes> entry : values.entrySet()) {
-			TransformationDto newT = new TransformationDto(entry, request.getLocale()); 
-			if(newT.getId() != null)
-				ret.add(newT);
-		}	
+		List<TransformationDto> ret = new ArrayList<TransformationDto>();
+		if(getTransformationDto(request) != null && getTransformationDto(request).size() > 0){
+			ret = getTransformationDto(request);
+		} else {
+			BasicDatatype selectedExport = getSelectedBasicDatatype(request);
+	//		DEBUG: BasicDatatype selectedExport = BasicDatatype.getCitadelJson();
+			BasicSchemaObjElements values = selectedExport.getValues();
+			for (Entry<BasicSchemaObjAbstractValue<?>, BasicSchemaObjAttributes> entry : values.entrySet()) {
+				TransformationDto newT = new TransformationDto(entry, request.getLocale()); 
+				if(newT.getId() != null)
+					ret.add(newT);
+			}	
+			setTransformationDto(request, ret);
+			autoMatch(request);
+		}
 		setResult(request, ret);
-		setTransformationDto(request, ret);
-		autoMatch(request);
 		
 		List<MetadataDto> list = getMetadataDto(request);
 		request.setAttribute(VIEW_PARAM_SOURCE_COLUMN_LIST, ConverterUtils.getTargetMetadata(list));
@@ -118,13 +121,16 @@ public class ContrExportSchema extends ConverterController {
 					el.addContent(c);
 			}
 		}
-		return new ExtViewResult(ConverterPortlet.CONTR_SAVE_FILE);
+		if ( ((BasicDatatype) getSelectedBasicDatatype(actionRequest)).getName().equals(BasicDatatype.getCitadelJson().getName())) {
+			return new ExtViewResult(ConverterPortlet.CONTR_SAVE_FILE_CITADEL);
+		} else {
+			return new ExtViewResult(ConverterPortlet.CONTR_SAVE_FILE_LISBON);
+		}
 	} 
 
 	@Override
-	public ExtViewResult previousStep(ActionRequest actionRequest, ActionResponse actionResponse) {
-		//TEMPORANEO per il momento salto export schema
-		return new ExtViewResult(ConverterPortlet.CONTR_SEMANTIC_MATCH);
-//		return new ExtViewResult(ConverterPortlet.CONTR_CHOOSE_EXPORT);
+	public ExtViewResult previousStep(ActionRequest request, ActionResponse response) {
+		setTransformationDto(request, null);
+		return new ExtViewResult(ConverterPortlet.CONTR_CHOOSE_EXPORT);
 	}	
 }

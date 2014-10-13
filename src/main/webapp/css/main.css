@@ -64,6 +64,18 @@ ul.tree-container li.tree-node {
 	line-height: 0px;
 }
 
+.tree-view {
+	overflow-y: scroll;
+}
+
+#categoryTree, #contentTree {
+	width: 300px;
+}
+
+#contextTree {
+	display: none; /* TODO: Riattivare quando supportato */
+}
+
 .citadel-navigation-menu {
 	text-align: right;
 }
@@ -73,7 +85,44 @@ ul.tree-container li.tree-node {
 	margin-top: 10px;
 }
 
+#modalPublish div.control-group {
+    margin-bottom: 0px;
+}
 
+#modalPublish div.help-inline {
+    display: none;
+}
+
+/* Limit column max width */
+​
+/* ​.aui .table th, .aui .table td { max-width: 20ex; overflow: auto; }​ */
+
+​​
+​/* Fix "many fields" mapping issue */
+​
+/* ​.searchcontainer-content { max-height: 600px; overflow: auto; } */
+
+
+
+/* TODO: Riattivare prima del deploy */
+
+.aui .dockbar .navbar-inner .nav > li, .aui .dockbar-split .dockbar .navbar-inner .nav > li {
+    background-color: #118ade;
+    background-image: linear-gradient(#118ade 0px, #118ade 47%, #1273c7 100%);
+}
+.aui .dockbar-split .dockbar .navbar-inner .nav > li {
+    background-color: #333;
+}
+.aui .dockbar .navbar-inner .nav > li, .aui .dockbar-split .dockbar .navbar-inner .nav > li {
+    background-color: #118ade;
+    background-image: linear-gradient(#118ade 0px, #118ade 47%, #1273c7 100%);
+}
+.aui .navbar .nav > li {
+    float: left;
+}
+li.sign-in {
+    display: none;
+}
 .navbar.navbar-static-top.dockbar{
     display: none;
 }

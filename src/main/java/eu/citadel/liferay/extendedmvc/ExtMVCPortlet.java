@@ -1,6 +1,7 @@
 package eu.citadel.liferay.extendedmvc;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import javax.portlet.ActionRequest;
@@ -51,21 +52,28 @@ public abstract class ExtMVCPortlet extends MVCPortlet {
 		try {
 			ExtMVCController controller = getFactory().getController(controller_key, request, response);
 			executeDoServeResource(controller, action, request, response);
-		}catch(Exception e){
+		} catch (ExtControllerException e) {
 			_log.error(e.getMessage());
-			_log.error("back to default serveResource");
+			_log.error("Error when executing serveResource method, resource Id: " + resourceId);
+			super.serveResource(request, response);
+		} catch (ExtControllerMethodException | ExtControllerInvalidMethodException e) {
+			_log.error("Error when executing serveResource method, resource Id: " + resourceId);
 			super.serveResource(request, response);
 		}
 		_log.debug("session: " + request.getPortletSession().getId() + ": serveResource end: " + resourceId);
 	}
 
-	private void executeDoServeResource(ExtMVCController controller, String action, ResourceRequest request, ResourceResponse response) throws ExtControllerException {
+	private void executeDoServeResource(ExtMVCController controller, String action, ResourceRequest request, ResourceResponse response) throws ExtControllerMethodException, ExtControllerInvalidMethodException {
 		try {
 			Method method = controller.getClass().getMethod(action, new Class[] { ResourceRequest.class, ResourceResponse.class });
 			Object args[] = new Object[] { request, response };
 			method.invoke(controller, args);
-		} catch (Exception e) {
-			throw new ExtControllerException(e);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			_log.error(e);
+			throw new ExtControllerMethodException(e);
+		} catch (NoSuchMethodException | SecurityException e) {
+			_log.error("Invalid method name");
+			throw new ExtControllerInvalidMethodException(e);
 		}
 	}
 
@@ -87,12 +95,15 @@ public abstract class ExtMVCPortlet extends MVCPortlet {
 			
 			controllerInstance = factory.getController(view.getControllerKey(), request, response);
 			this.viewTemplate = controllerInstance.getViewPath(view.getViewKey(), request, response);
+			this.include(viewTemplate, request, response);
 		} catch (ExtControllerException e) {
 			_log.error(e.getMessage());
 			_log.error("back to default doView");
 			super.doView(request, response);
+		} catch (ExtControllerMethodException | ExtControllerInvalidMethodException e) {
+			_log.error("Error when executing do view method" );
+			super.doView(request, response);
 		}
-		this.include(viewTemplate, request, response);
 		_log.debug("session: " + request.getPortletSession().getId() + ": doView end");
 	}
 
@@ -164,14 +175,17 @@ public abstract class ExtMVCPortlet extends MVCPortlet {
 			response.setRenderParameter(MVC_REQUEST_PARAM, result.getControllerKey());
 		} catch (ExtControllerException e) {
 			_log.error(e.getMessage());
-			_log.error("back to default processAction");
+			_log.error("Error when executing processAction method: " + actionName );
+			super.processAction(request, response);
+		} catch (ExtControllerMethodException | ExtControllerInvalidMethodException e) {
+			_log.error("Error when executing processAction method: " + actionName );
 			super.processAction(request, response);
 		}
 
 		_log.debug("session: " + request.getPortletSession().getId() + ": processAction end");
 	}
 	
-	protected ExtViewResult executeDoView(ExtMVCController controller, RenderRequest request, RenderResponse response) throws ExtControllerException {
+	protected ExtViewResult executeDoView(ExtMVCController controller, RenderRequest request, RenderResponse response) throws ExtControllerMethodException, ExtControllerInvalidMethodException {
 		ExtViewResult returnValue = null;
 		try {
 			_log.debug("session: " + request.getPortletSession().getId() + " doView start execution of controller: " + controller.getClass());
@@ -179,13 +193,17 @@ public abstract class ExtMVCPortlet extends MVCPortlet {
 			Object args[] = new Object[] { request, response };
 			returnValue = (ExtViewResult) method.invoke(controller, args);
 			_log.debug("session: " + request.getPortletSession().getId() + " doView end execution of controller: " + controller.getClass());
-		} catch (Exception e) {
-			throw new ExtControllerException(e);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			_log.error(e);
+			throw new ExtControllerMethodException(e);
+		} catch (NoSuchMethodException | SecurityException e) {
+			_log.error("Invalid method name");
+			throw new ExtControllerInvalidMethodException(e);
 		}
 		return returnValue;
 	}
 
-	protected ExtViewResult executeDoAction(ExtMVCController controller, String action, ActionRequest request, ActionResponse response) throws ExtControllerException {
+	protected ExtViewResult executeDoAction(ExtMVCController controller, String action, ActionRequest request, ActionResponse response) throws ExtControllerMethodException, ExtControllerInvalidMethodException {
 		ExtViewResult returnValue = null;
 		try {
 			_log.debug("session: " + request.getPortletSession().getId() + " action: " + action + " start execution of controller: " + controller.getClass());
@@ -193,8 +211,12 @@ public abstract class ExtMVCPortlet extends MVCPortlet {
 			Object args[] = new Object[] { request, response };
 			returnValue = (ExtViewResult) method.invoke(controller, args);
 			_log.debug("session: " + request.getPortletSession().getId() + " action: " + action + " end execution of controller: " + controller.getClass());
-		} catch (Exception e) {
-			throw new ExtControllerException(e);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			_log.error(e);
+			throw new ExtControllerMethodException(e);
+		} catch (NoSuchMethodException | SecurityException e) {
+			_log.error("Invalid method name");
+			throw new ExtControllerInvalidMethodException(e);
 		}
 		return returnValue;
 	}

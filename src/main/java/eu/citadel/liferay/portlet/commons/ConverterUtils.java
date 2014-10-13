@@ -1,14 +1,19 @@
 package eu.citadel.liferay.portlet.commons;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletRequest;
@@ -18,12 +23,30 @@ import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.Validator;
 
 import eu.citadel.converter.config.Config;
+import eu.citadel.converter.data.dataset.Dataset;
+import eu.citadel.converter.exceptions.DatasetException;
 import eu.citadel.liferay.portlet.dto.MetadataDto;
 
 /**
  * @author ttrapanese
  */
 public class ConverterUtils {
+	public static Map<String, String> getPropertiesMap(Class<?> clazz, String propFileName) throws IOException {
+        Properties prop = new Properties();
+        InputStream inputStream = clazz.getClassLoader().getResourceAsStream(propFileName);
+        prop.load(inputStream);
+        if (inputStream == null) {
+            throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+        }
+ 
+        Map<String, String> ret = new HashMap<String, String>();
+        Set<String> propertiesKeys = prop.stringPropertyNames();
+        for (String k : propertiesKeys) {
+			ret.put(k, prop.getProperty(k));
+		}
+        return ret;
+    }
+	
 	public static Map<String, String> getUploadFolderPath(PortletRequest request){
 		Map<String, String> folderPath = new LinkedHashMap<String, String>();
 		folderPath.put("Upload", "Uploded file");
@@ -83,14 +106,15 @@ public class ConverterUtils {
 		return uploadFolder;
 	}
 
-	private static final String getDestJsonFilePath(PortletRequest request, String originalName){
-		String tmp = getBaseFolderPath(request) + originalName;
+	private static final String getDestFilePath(PortletRequest request, String originalName){
+		String tmp = getBaseFolderPath(request) + Files.getNameWithoutExtension(originalName);
 		String ret = tmp;
 		int i=1;
 		while (new File(ret).exists()) {
 			ret = tmp + "("+ i + ")";
 			i++;
 		}
+		ret += "." + Files.getFileExtension(originalName);
 		return ret;
 	}
 
@@ -103,14 +127,27 @@ public class ConverterUtils {
 	}
 
 	
-	public static File uploadJson(PortletRequest request, File entryFile, String fileName) throws IOException {
-		String destFilePath = getDestJsonFilePath(request, fileName);
+	public static File uploadFile(PortletRequest request, File entryFile, String fileName) throws IOException {
+		String destFilePath = getDestFilePath(request, fileName);
 		File ret = new File(destFilePath);
-		File dir = ret.getParentFile();
-		dir.mkdirs();
+		Files.createParentDirs(ret);
 		Files.move(entryFile, ret);
 		return ret;
 	}	
+
+	public static File uploadFile(PortletRequest request, Dataset ds, String fileName) throws IOException {
+		String destFilePath = getDestFilePath(request, fileName);
+		File ret = new File(destFilePath);
+		Files.createParentDirs(ret);
+		try {
+			ds.saveAs(ret.toPath(), true);
+		} catch (DatasetException e) {
+			throw new IOException(e);
+		}
+		return ret;
+	}	
+
+	
 	public static File uploadOriginalDocument(PortletRequest request, File entryFile, String fileName) throws IOException {
 		String destFilePath = getDestOriginalDocumentPath(request, fileName);
 		File ret = new File(destFilePath);

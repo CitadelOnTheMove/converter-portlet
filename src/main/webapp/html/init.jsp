@@ -1,3 +1,4 @@
+<%@page import="eu.citadel.liferay.portlet.commons.ConverterConstants"%>
 <%@page import="javax.portlet.*"%>
 <%@page import="com.liferay.portlet.*"%>
 <%@page import="com.liferay.portal.kernel.util.*"%>
@@ -21,3 +22,10 @@
 
 <portlet:defineObjects />
 <liferay-theme:defineObjects />
+
+<%
+	String message = (String) request.getAttribute(ConverterConstants.PAGE_ATTR_ERROR_MESSAGE);
+	if(Validator.isNotNull(message)) {
+		pageContext.getOut().write("<div class=\"alert alert-error\"> " + LanguageUtil.get(pageContext, message) + " </div>");
+	}
+%>

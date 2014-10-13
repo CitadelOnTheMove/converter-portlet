@@ -4,7 +4,7 @@
 <%@page import="com.liferay.portal.kernel.dao.search.RowChecker"%>
 <%@page import="eu.citadel.liferay.portlet.converter.ConverterPortlet"%>
 <%@page import="eu.citadel.liferay.extendedmvc.ExtMVCPortlet"%>
-<%@page import="static eu.citadel.liferay.portlet.converter.ContrSemanticMatch.*"%>
+<%@page import="static eu.citadel.liferay.portlet.converter.controller.ContrSemanticMatch.*"%>
 <%@include file="../init.jsp"%>
 
 
@@ -24,9 +24,10 @@
 				     	<liferay-ui:search-container-column-text name="semantic-match-category"		cssClass="<%= \"categoryClass category_\" +dto.getId()	%>">
 					     	<input type="hidden" name="<portlet:namespace/><%= CATEGORY_PARAM_PREFIX + dto.getId() %>" class="input-text-category"/>
 				     	</liferay-ui:search-container-column-text>
-				     	<liferay-ui:search-container-column-text name="semantic-match-context"		cssClass="<%= \"contextClass context_\" +dto.getId()	%>">
-					     	<input type="hidden" name="<portlet:namespace/><%=CONTEXT_PARAM_PREFIX  + dto.getId()%>" class="input-text-context"/>
-				     	</liferay-ui:search-container-column-text>
+<!--  TODO: Riattivare quando supportato -->
+<%-- 				     	<liferay-ui:search-container-column-text name="semantic-match-context"		cssClass="<%= \"contextClass context_\" +dto.getId()	%>"> --%>
+<%-- 					     	<input type="hidden" name="<portlet:namespace/><%=CONTEXT_PARAM_PREFIX  + dto.getId()%>" class="input-text-context"/> --%>
+<%-- 				     	</liferay-ui:search-container-column-text> --%>
 				  	</liferay-ui:search-container-row>
 				  	<liferay-ui:search-iterator paginate="false"/>
 				</liferay-ui:search-container>
@@ -60,6 +61,35 @@
 AUI().use(
   'aui-modal',
   function(A) {
+	var treeLeft = 0;
+	AUI().on("scroll",function(e){
+		var frmTop = document.getElementById('<portlet:namespace/>frmCategory').getBoundingClientRect().top;
+		if (frmTop < 30) {			
+			if(A.one('#categoryTree').getStyle('position') == 'inherit'){
+			 	treeLeft = document.getElementById('categoryTree').getBoundingClientRect().left;
+			}
+
+			A.one('#categoryTree').setStyles({
+		        maxHeight: (AUI().one('#<portlet:namespace/>frmCategory').height() + frmTop - 30 - 45) + 'px' <!-- -45 is a correction value -->
+			});
+
+			A.one('#categoryTree').setStyles({
+			    position: 'fixed',
+			    left: treeLeft +'px',
+			    top: '30px'
+			});
+		} else {
+			A.one('#categoryTree').setStyles({
+				maxHeight: A.one('#categoryTree') + 'px'
+			});
+			A.one('#categoryTree').setStyles({
+			    position: 'inherit',
+			    right: 'inherit',
+			    top: 'inherit'
+			});
+		};
+	});
+  	
     var modal = new A.Modal(
       {
         bodyContent: '<liferay-ui:message key="semantic-match-alert-message"/>',
@@ -133,20 +163,6 @@ AUI().use(
   }
 );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var categoryTreeChild = [ {
 	children : [ 
 	<%
@@ -166,7 +182,7 @@ var categoryTreeChild = [ {
 	expanded : true,
 	label : '<liferay-ui:message key="semantic-match-category"/>'
 } ];
-
+<!-- TODO: Riattivare quando supportato
 var contextTreeChild = [ {
 	children : [ 
 	<%
@@ -186,7 +202,7 @@ var contextTreeChild = [ {
 	expanded : true,
 	label : '<liferay-ui:message key="semantic-match-context"/>'
 } ];
-
+ -->
   new Liferay.Portlet.DraggableTree({
 	  context : '<%=CATEGORY_PARAM_PREFIX%>',
 	  treeSelector : '#categoryTree',
@@ -195,7 +211,7 @@ var contextTreeChild = [ {
 	  treeChild : categoryTreeChild,
 	  onlyOneDrop : true,
   }).render();
-  
+<!-- TODO: Riattivare quando supportato
   new Liferay.Portlet.DraggableTree({
 	  context : '<%=CONTEXT_PARAM_PREFIX%>',
 	  treeSelector : '#contextTree',
@@ -204,7 +220,7 @@ var contextTreeChild = [ {
 	  treeChild : contextTreeChild,
 	  onlyOneDrop : false
   }).render();
-
+-->
 </aui:script>
 
 

@@ -25,9 +25,10 @@
 			<mime-type>text/html</mime-type>
 		</supports>
 		<supported-locale>it_IT</supported-locale>
+		<supported-locale>fr_FR</supported-locale>
 		<resource-bundle>content/Language</resource-bundle>
 		<portlet-info>
-			<title>Citadel Converter Web 1.0</title>
+			<title>Citadel Converter Web 1.2</title>
 			<short-title>converter</short-title>
 			<keywords>converter</keywords>
 		</portlet-info>

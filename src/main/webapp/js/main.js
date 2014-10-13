@@ -164,10 +164,10 @@ var CONTEXT = 'context',
 		
 					   var newPortlet = instanceDT._getNewElement(instanceDT, tdCategory, elementId, elementNode.text());
 					
-					   // this condition is for a bug that i don't know where came from 
+					   // this condition is for a bug that i don't know where came from //TODO: there are a parameter to pass to container that remove the bug
 					   var valid = activeDrop.get('node').ancestors(instanceDT.get(DROP_NODE_SELECTOR)).size() > 0;
 
-					   //le altre per evitare i duplicati 
+					   //the other to avoid duplicate 
 					   if(instanceDT.get(VALID_NODE) != null){
 						   valid = valid && instanceDT.get(VALID_NODE)(instanceDT, activeDrop.get('node'), elementId, allElemNum, elemNum);
 					   }else{
@@ -197,8 +197,8 @@ var CONTEXT = 'context',
 			    	var arr = text.val().split('#');
 			    	if(arr != null){
 			    		for (var i=0; i<arr.length; i++){
-			    	    	if(arr[i] != "" && arr[i].indexOf("{plain_text}") == -1){
-			    	    		var container = text.get('parentNode');
+		    	    		var container = text.get('parentNode');
+			    	    	if(arr[i] != "" && (arr[i].indexOf("{plain_text}") == -1 || container.all('.aui-field-select').size() == 0)){
 			    	    		
 			    	    		console.log('li#'+arr[i]+' .tree-label');
 //			    	    		var label='';
@@ -213,9 +213,18 @@ var CONTEXT = 'context',
 //			    	    		
 			    	    		
 			    	    		
-			    	    		
-			    	    		var label = A.one('li#'+arr[i]+' .tree-label').text();
-			    	    		var newEl = instanceDT._getNewElement(instanceDT, container, arr[i], label);
+			    	    		var treeItem = A.one('li#'+arr[i]+' .tree-label');
+			    	    		var label = "";
+			    	    		if(treeItem != null){
+				    	    		label = A.one('li#'+arr[i]+' .tree-label').text();
+			    	    		}
+			    	    		var id = "";
+			    	    		if(arr[i].indexOf("{plain_text}") != -1) {
+			    	    			id = "custom-text";
+			    	    			label = arr[i].replace("{plain_text}", "");
+			    	    		}
+			    	    		var newEl = instanceDT._getNewElement(instanceDT, container, id, label);
+
 			    	    		container.append(newEl);
 			    	    	}
 			    		};

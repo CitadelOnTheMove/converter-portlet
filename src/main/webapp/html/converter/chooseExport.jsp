@@ -1,6 +1,6 @@
 <%@page import="com.liferay.util.bridges.mvc.MVCPortlet"%>
 <%@page import="eu.citadel.converter.data.datatype.BasicDatatype"%>
-<%@page import="static eu.citadel.liferay.portlet.converter.ContrChooseExport.*"%>
+<%@page import="static eu.citadel.liferay.portlet.converter.controller.ContrChooseExport.*"%>
 <%@page import="static eu.citadel.liferay.extendedmvc.ExtMVCPortlet.*"%>
 <%@page import="static eu.citadel.liferay.portlet.converter.ConverterPortlet.*"%>
 <%@include file="../init.jsp"%>

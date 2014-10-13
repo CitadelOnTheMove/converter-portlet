@@ -5,7 +5,7 @@
 <%@page import="com.liferay.portal.kernel.dao.search.RowChecker"%>
 <%@page import="eu.citadel.liferay.portlet.converter.ConverterPortlet"%>
 <%@page import="eu.citadel.liferay.extendedmvc.ExtMVCPortlet"%>
-<%@page import="static eu.citadel.liferay.portlet.converter.ContrExportSchema.*"%>
+<%@page import="static eu.citadel.liferay.portlet.converter.controller.ContrExportSchema.*"%>
 <%@page import="static eu.citadel.liferay.portlet.commons.ConverterConstants.*"%>
 
 <%@include file="../init.jsp"%>
@@ -37,7 +37,6 @@
 							 		<%	} %>
 									</aui:select>
 						    <% } %>			     		     	
-
 		     		     	<input type="hidden" 
 		     		     		name="<portlet:namespace/><%= SOURCE_COLUMN_PREFIX + dto.getId() %>" 
 		     		     		class="input-text-content" 
@@ -106,6 +105,37 @@ function checkValidity(row){
 
 
 AUI().ready( function(A){
+	var treeLeft = 0;
+	AUI().on("scroll",function(e){
+		var frmTop = document.getElementById('<portlet:namespace/>frmCategory').getBoundingClientRect().top;
+		if (frmTop < 30) {			
+			if(A.one('#contentTree').getStyle('position') == 'inherit'){
+			 	treeLeft = document.getElementById('contentTree').getBoundingClientRect().left;
+			}
+
+			A.one('#contentTree').setStyles({
+		        maxHeight: (AUI().one('#<portlet:namespace/>frmCategory').height() + frmTop - 30 - 45) + 'px' <!-- -45 is a correction value -->
+			});
+
+			A.one('#contentTree').setStyles({
+			    position: 'fixed',
+			    left: treeLeft +'px',
+			    top: '30px'
+			});
+		} else {
+			A.one('#contentTree').setStyles({
+				maxHeight: A.one('#contentTree') + 'px'
+			});
+			A.one('#contentTree').setStyles({
+			    position: 'inherit',
+			    right: 'inherit',
+			    top: 'inherit'
+			});
+		};
+	});
+
+
+
 	    var modal = new A.Modal(
       {
         bodyContent: '<liferay-ui:message key="export-schema-missing-fields"/>',
@@ -221,7 +251,8 @@ var contentTreeChild = [ {
 	  onlyOneDrop : false,
 	  insertElement : function(that, context, container, id, label){
 		  if(id=='custom-text'){
-				var newPortlet = AUI().Node.create('<span class="'+context+'contextDiv"><input type="text" id="'+context+'_id" class="'+context+'contextLabel inputPlainText '+context+'contextLabel_' + id + '" ' + context + '_id="' + id + '" /><span class="'+context+'contextRemove">x</span></span>');
+		  		if(label == "Custom text") label = "";
+				var newPortlet = AUI().Node.create('<span class="'+context+'contextDiv"><input type="text" id="'+context+'_id" class="'+context+'contextLabel inputPlainText '+context+'contextLabel_' + id + '" ' + context + '_id="' + id + '"' + ' value="' + label  + '" /><span class="'+context+'contextRemove">x</span></span>');
 				newPortlet.one('.'+context+'contextRemove').on('click', function(e){
 					   newPortlet.remove();
 					   that._updateInputText(that, container);

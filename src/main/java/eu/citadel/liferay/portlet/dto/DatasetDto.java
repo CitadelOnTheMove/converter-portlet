@@ -1,6 +1,7 @@
 package eu.citadel.liferay.portlet.dto;
 
 import java.io.File;
+import java.net.URL;
 
 import eu.citadel.converter.data.dataset.Dataset;
 
@@ -9,6 +10,7 @@ import eu.citadel.converter.data.dataset.Dataset;
  */
 public class DatasetDto {
 	private String file;
+	private URL url;
 	private File fileEntry;
 	private boolean isFirstRowHeader;
 	private Integer sheetNumber;
@@ -82,5 +84,11 @@ public class DatasetDto {
 	public void setFileEntry(File fileEntry) {
 		this.fileEntry = fileEntry;
 	}
-	
+	public URL getUrl() {
+		return url;
+	}
+	public void setUrl(URL url) {
+		this.url = url;
+	}
+
 }
