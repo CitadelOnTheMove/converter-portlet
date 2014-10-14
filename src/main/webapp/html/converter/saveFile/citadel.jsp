@@ -47,6 +47,7 @@ if(Validator.isNull(err)){
 	Map<String, String>  languageMap 	= (Map<String, String>)   request.getAttribute(VIEW_ATTRIBUTE_LANGUAGE_MAP);
 	Map<Integer, String> typeMap 		= (Map<Integer, String>)  request.getAttribute(VIEW_ATTRIBUTE_TYPE_MAP);
 	List<CitadelCityInfo> locationList 	= (List<CitadelCityInfo>) request.getAttribute(VIEW_ATTRIBUTE_LOCATION_LIST);
+	List<String> licenceList 			= (List<String>) request.getAttribute(VIEW_ATTRIBUTE_LICENCE_LIST);
 %>
 
 <div class="hidden">
@@ -72,9 +73,17 @@ if(Validator.isNull(err)){
 			<% } %>
 			</aui:select>
 
-			<aui:input label="save-file-publisher" 		type="text"	name="<%= CONTR_PARAM_PUBLISHER 	%>"	inlineField="true"/>
-			<aui:input label="save-file-source" 		type="text"	name="<%= CONTR_PARAM_SOURCE 		%>"	inlineField="true"/>
-			<aui:input label="save-file-license" 		type="text"	name="<%= CONTR_PARAM_LICENSE 		%>"	inlineField="true"/>
+			<aui:input label="save-file-publisher" 		type="text"	name="<%= CONTR_PARAM_PUBLISHER 	%>"	inlineField="true">
+				<aui:validator name="required"/>
+			</aui:input>
+			<aui:input label="save-file-source" 		type="text"	name="<%= CONTR_PARAM_SOURCE 		%>"	inlineField="true">
+				<aui:validator name="required"/>
+			</aui:input>
+			<aui:select label="save-file-license" 		type="text"	name="<%= CONTR_PARAM_LICENSE %>" 		inlineField="true">
+			<% for(String lic : licenceList) { %>
+				<aui:option label="<%= lic %>" value="<%= lic %>"/>
+			<% } %>
+			</aui:select>
 			<aui:button-row>
 				<aui:button type="button" primary="true" value="save-file-publish-cancel"	name="btnCancelPublish"/>
 				<aui:button type="submit" primary="true" value="save-file-publish-submit"	name="btnSubmitPublish"/>

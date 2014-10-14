@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -61,9 +62,12 @@ public class ContrSaveFileCitadel extends ContrSaveFileAbstarct {
 	public static final String CONTR_PARAM_LICENSE 					= "contr_param_license";
 	public static final String CONTR_PARAM_LANGUAGE 				= "contr_param_language";
 	
+	
+	public static final String VIEW_ATTRIBUTE_LICENCE_LIST			= "view_attribute_licence_list";
 	public static final String VIEW_ATTRIBUTE_LOCATION_LIST			= "view_attribute_location_list";
 	public static final String VIEW_ATTRIBUTE_TYPE_MAP 				= "view_attribute_type_map";
 	public static final String VIEW_ATTRIBUTE_LANGUAGE_MAP 			= "view_attribute_language_map";
+	public static final List<String> LICENCE_LIST 					= Arrays.asList(new String[]{"CC BY 4.0", "CC-0"});
 
 	private static final String CHARSET_UTF_8 						= "UTF-8";
 	private static final String LINK_ERROR 							= "https://github.com/CitadelOnTheMove/converter-lib/wiki/Troubleshooting";
@@ -125,6 +129,7 @@ public class ContrSaveFileCitadel extends ContrSaveFileAbstarct {
 		request.setAttribute(VIEW_ATTRIBUTE_OBJECT_PREVIEW	, prettyjson);
 		request.setAttribute(VIEW_ATTRIBUTE_DOWNLOAD_LINK	, downloadLink);
 		request.setAttribute(VIEW_ATTRIBUTE_LOCATION_LIST	, CitadelIndexUtil.getCitadelCityInfo(CITY_INFO_URL));
+		request.setAttribute(VIEW_ATTRIBUTE_LICENCE_LIST	, LICENCE_LIST);
 		request.setAttribute(VIEW_ATTRIBUTE_TYPE_MAP		, CitadelIndexConstants.TYPE_MAP);
 		request.setAttribute(VIEW_ATTRIBUTE_LANGUAGE_MAP	, CitadelIndexConstants.LANGUAGE_MAP);
 		file.delete();
@@ -153,6 +158,21 @@ public class ContrSaveFileCitadel extends ContrSaveFileAbstarct {
 		if(Validator.isNull(title)) {
 			getLog(request).error("Invalid title");
 			setErrorMessage(request, "Invalid title");
+			return new ExtViewResult(ConverterPortlet.CONTR_SAVE_FILE_CITADEL);
+		}
+		if(Validator.isNull(publisher)) {
+			getLog(request).error("Invalid publisher");
+			setErrorMessage(request, "Invalid publisher");
+			return new ExtViewResult(ConverterPortlet.CONTR_SAVE_FILE_CITADEL);
+		}
+		if(Validator.isNull(source)) {
+			getLog(request).error("Invalid source");
+			setErrorMessage(request, "Invalid source");
+			return new ExtViewResult(ConverterPortlet.CONTR_SAVE_FILE_CITADEL);
+		}
+		if(!LICENCE_LIST.contains(license)) {
+			getLog(request).error("Invalid license");
+			setErrorMessage(request, "Invalid license");
 			return new ExtViewResult(ConverterPortlet.CONTR_SAVE_FILE_CITADEL);
 		}
 		try {

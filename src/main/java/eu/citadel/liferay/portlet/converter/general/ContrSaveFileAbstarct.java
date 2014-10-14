@@ -70,7 +70,6 @@ public abstract class ContrSaveFileAbstarct extends ConverterController {
 			originalFilePath = ((Path) dset.getDataset().getInternalStateObject(DatasetStatus.STATUS_PATH)).toFile();
 		} catch (DatasetException e) {
 			originalFilePath = ((Path) dset.getDataset().getInternalStateObject(DatasetStatus.STATUS_TEMPPATH)).toFile();
-
 		}
 		return originalFilePath.getName();
 	}
