@@ -1,3 +1,4 @@
+<%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="java.util.Map.Entry"%>
 <%@page import="eu.citadel.converter.localization.Messages"%>
 <%@page import="com.liferay.portal.kernel.messaging.Message"%>
@@ -19,8 +20,8 @@
 				<liferay-ui:search-container emptyResultsMessage="semantic-match-no-colum" >
 					<liferay-ui:search-container-results results="${results}" total="${total}" />		
 				  	<liferay-ui:search-container-row className="eu.citadel.liferay.portlet.dto.MetadataDto" modelVar="dto" keyProperty="id" >
-				     	<liferay-ui:search-container-column-text name="semantic-match-source-column"	property="name" 									/>
-				     	<liferay-ui:search-container-column-text name="semantic-match-example"			property="example"									/>
+				     	<liferay-ui:search-container-column-text name="semantic-match-source-column"	value="<%= StringUtils.abbreviate(dto.getName()   , ConverterConstants.MAX_TEXT_LENGTH) %>" />
+				     	<liferay-ui:search-container-column-text name="semantic-match-example"			value="<%= StringUtils.abbreviate(dto.getExample(), ConverterConstants.MAX_TEXT_LENGTH) %>"	/>
 				     	<liferay-ui:search-container-column-text name="semantic-match-category"		cssClass="<%= \"categoryClass category_\" +dto.getId()	%>">
 					     	<input type="hidden" name="<portlet:namespace/><%= CATEGORY_PARAM_PREFIX + dto.getId() %>" class="input-text-category"/>
 				     	</liferay-ui:search-container-column-text>
@@ -172,7 +173,7 @@ var categoryTreeChild = [ {
 %>
 		{
 			id : '<%= entry.getKey() %>',
-			label : '<%= Messages.getString(entry.getValue(), locale) %>',
+			label : '<%= StringUtils.abbreviate(Messages.getString(entry.getValue(), locale), ConverterConstants.MAX_TEXT_LENGTH) %>',
 			leaf : true,
 		} ,
 	<%
@@ -192,7 +193,7 @@ var contextTreeChild = [ {
 %>
 		{
 			id : '<%= entry.getKey() %>',
-			label : '<%= Messages.getString(entry.getValue(), locale) %>',
+			label : '<%= StringUtils.abbreviate(Messages.getString(entry.getValue(), locale), ConverterConstants.MAX_TEXT_LENGTH) %>',
 			leaf : true,
 		} ,
 	<%

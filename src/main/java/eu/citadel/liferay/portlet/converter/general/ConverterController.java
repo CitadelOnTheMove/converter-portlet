@@ -137,6 +137,10 @@ public class ConverterController extends ExtMVCListController {
 		request.setAttribute(ConverterConstants.PAGE_ATTR_ERROR_MESSAGE, message);
 	}
 	
+	public void setWarningMessage(PortletRequest request, Object message){
+		request.setAttribute(ConverterConstants.PAGE_ATTR_WARNING_MESSAGE, message);
+	}
+	
 	public Log getLog(PortletRequest request){
 		return new SessionLog(request.getPortletSession(), ConverterController.class.getName());
 	}

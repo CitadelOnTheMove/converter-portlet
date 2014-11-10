@@ -31,6 +31,8 @@ import eu.citadel.liferay.portlet.dto.MetadataDto;
  * @author ttrapanese
  */
 public class ConverterUtils {
+	
+	
 	public static Map<String, String> getPropertiesMap(Class<?> clazz, String propFileName) throws IOException {
         Properties prop = new Properties();
         InputStream inputStream = clazz.getClassLoader().getResourceAsStream(propFileName);

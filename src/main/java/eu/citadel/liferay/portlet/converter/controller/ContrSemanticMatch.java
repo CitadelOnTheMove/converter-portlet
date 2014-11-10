@@ -158,14 +158,7 @@ public class ContrSemanticMatch extends ConverterController {
 					el.addContext(c);
 			}
 		}
-		
-		//TEMPORANEO per il momento salto choose export
-//		setSelectedBasicDatatype(actionRequest, BasicDatatype.getAvailableBasicDatatype().get(0));
-//		_log.debug("session: " + actionRequest.getPortletSession().getId() +" selected export type: " + 0);
-//		return new ExtViewResult(ConverterPortlet.CONTR_EXPORT_SCHEMA);
-		
-		
-		
+
 		return new ExtViewResult(ConverterPortlet.CONTR_CHOOSE_EXPORT);
 	}
 

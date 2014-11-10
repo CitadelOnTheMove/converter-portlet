@@ -94,13 +94,13 @@ ul.tree-container li.tree-node {
 }
 
 /* Limit column max width */
-​
-/* ​.aui .table th, .aui .table td { max-width: 20ex; overflow: auto; }​ */
+���
+/* ���.aui .table th, .aui .table td { max-width: 20ex; overflow: auto; }��� */
 
-​​
-​/* Fix "many fields" mapping issue */
-​
-/* ​.searchcontainer-content { max-height: 600px; overflow: auto; } */
+������
+���/* Fix "many fields" mapping issue */
+���
+/* ���.searchcontainer-content { max-height: 600px; overflow: auto; } */
 
 
 
@@ -120,20 +120,6 @@ ul.tree-container li.tree-node {
 .aui .navbar .nav > li {
     float: left;
 }
-li.sign-in {
-    display: none;
-}
-.navbar.navbar-static-top.dockbar{
-    display: none;
-}
-.powered-by{
-    display: none;
-}
-
-#wrapper > header {
-    display: none;
-}
-
-#content > nav {
+li.sign-in, .navbar.navbar-static-top.dockbar, .powered-by, #wrapper > header, #content > nav, nav.lfr-hudcrumbs {
     display: none;
 }

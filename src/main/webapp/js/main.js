@@ -145,7 +145,37 @@ var CONTEXT = 'context',
 //					   node.addClass('foo-test');
 					   instance.lastAlignDrop = activeDrop;
 				   }
-			   },
+			   }
+//			   ,
+//			   _syncPlaceholderSize: function() {
+//				   var instance = this;
+//				   var node = instance.activeDrop.get('node');
+//				    
+//				   var placeholder = instance.get('placeholder');
+//				    
+//				   if (placeholder) {
+//					   placeholder.set('offsetHeight', node.get('offsetHeight'));
+//					   placeholder.set('offsetWidth', 5);
+//				   }
+//			   },		   
+//			   getPlaceholderXY: function(region, isTarget) {
+//				   var instance = this;
+//				   var placeholder = instance.get('placeholder');
+//				   var regionBottom = (region.bottom);
+//				   var regionLeft = (region.left);
+//				   var regionTop = (region.top);
+//				    
+//				   var x = regionLeft;
+//				   console.log(region);
+//				   console.log(isTarget);
+//				   // 1 and 2 quadrants are the top quadrants, so align to the
+//				   // region.top when quadrant < 3
+//				   var y = (instance.quadrant < 3) ?
+//				   (regionLeft - (placeholder.get('offsetWidth'))) : (regionLeft);
+//				   var lastY = instance.lastY;
+//				   var lastX = instance.lastX;
+//				   return [lastX-regionTop, lastY];
+//				   }
 		   });
 		
 		   var portletList = new PortletItem();
@@ -177,7 +207,8 @@ var CONTEXT = 'context',
 					   
 					   if(valid){
 						   if (portletList.appendNode && portletList.appendNode.inDoc()) {
-							   portletList.appendNode.replace(newPortlet);
+							   portletList.appendNode.remove();
+							   tdCategory.append(newPortlet);
 						   }
 						   
 						   instanceDT._updateInputText(instanceDT, tdCategory);
@@ -199,20 +230,6 @@ var CONTEXT = 'context',
 			    		for (var i=0; i<arr.length; i++){
 		    	    		var container = text.get('parentNode');
 			    	    	if(arr[i] != "" && (arr[i].indexOf("{plain_text}") == -1 || container.all('.aui-field-select').size() == 0)){
-			    	    		
-			    	    		console.log('li#'+arr[i]+' .tree-label');
-//			    	    		var label='';
-//			    	    		tree.getChildren().forEach(function(e){
-//			    	    			e.getChildren().forEach(
-//			    	    					function(e){
-//			    	    						if(e.getAttrs().id == arr[i])
-//			    	    							label = e.getAttrs().label;
-//			    	    						console.log(e.getAttrs().label);
-//		    	    						});
-//		    	    			});
-//			    	    		
-			    	    		
-			    	    		
 			    	    		var treeItem = A.one('li#'+arr[i]+' .tree-label');
 			    	    		var label = "";
 			    	    		if(treeItem != null){

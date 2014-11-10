@@ -21,6 +21,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTag;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.liferay.portal.kernel.dao.search.ResultRow;
 import com.liferay.portal.kernel.dao.search.SearchEntry;
 import com.liferay.portal.kernel.dao.search.TextSearchEntry;
@@ -65,7 +67,9 @@ public class SearchContainerColumnListTag<R> extends SearchContainerColumnTag
 				if (_translate) {
 					val = LanguageUtil.get(pageContext, val);
 				}
-				
+				if (getLengthLimit() > 0) {
+					val = StringUtils.abbreviate(val, getLengthLimit());
+				}
 				TextSearchEntry textSearchEntry = new TextSearchEntry();
 
 				textSearchEntry.setAlign(getAlign());
@@ -225,6 +229,14 @@ public class SearchContainerColumnListTag<R> extends SearchContainerColumnTag
 		this._header = _header;
 	}
 
+	public int getLengthLimit() {
+		return _lengthLimit;
+	}
+
+	public void setLengthLimit(int _lengthLimit) {
+		this._lengthLimit = _lengthLimit;
+	}
+
 	private String _buffer;
 	private Object _href;
 	private String _property;
@@ -234,5 +246,6 @@ public class SearchContainerColumnListTag<R> extends SearchContainerColumnTag
 	private boolean _translate;
 	private List<Object> _list;
 	private List<Object> _header;
+	private int _lengthLimit;
 
 }

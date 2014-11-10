@@ -1,6 +1,9 @@
 package eu.citadel.liferay.portlet.converter.controller;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +23,8 @@ import eu.citadel.converter.data.dataset.CsvDataset;
 import eu.citadel.converter.data.dataset.Dataset;
 import eu.citadel.converter.data.datatype.BasicDatatype;
 import eu.citadel.converter.data.metadata.BasicMetadata;
+import eu.citadel.converter.exceptions.CKANException;
+import eu.citadel.converter.io.CKANUtils;
 import eu.citadel.converter.transform.MyNLisbonCaseCsvTransform;
 import eu.citadel.converter.transform.Transform;
 import eu.citadel.converter.transform.config.BasicTransformationConfig;
@@ -72,43 +77,61 @@ public class ContrCkanExportLisbon extends ContrCkanExportAbstract {
 	}
 	
 	public ExtViewResult insert(ActionRequest request, ActionResponse response) throws IOException, PortletException {
-		getLog(request).debug("Tentato hacking");
-		setErrorMessage(request, "ACCESS DANIED");
-		return new ExtViewResult(getControllerName());
-//		String url 			= ParamUtil.getString(request, CONTR_PARAM_URL);
-//		String api 			= ParamUtil.getString(request, CONTR_PARAM_API);
-//		String ver 			= ParamUtil.getString(request, CONTR_PARAM_VERS);
-//
-//		String resName 		= ParamUtil.getString(request, CONTR_PARAM_RESOURCE_NAME);
-//		List<List<String>> originalRows = null;
-//		try {
-//			originalRows = getRow(request);
-//		} catch (Exception e) {
-//			getLog(request).error(e);
-//			setErrorMessage(request, e.getLocalizedMessage());
-//			return new ExtViewResult(getControllerName());
-//		}
-//		List<String> keys = originalRows.get(0);
-//		List<Map<String, Object>> rowToInsert = new ArrayList<Map<String, Object>>();
-//		for (List<String> list : originalRows.subList(1, originalRows.size())) {
-//			Map<String, Object> row = new HashMap<String, Object>();
-//			for (int i = 0; i < list.size(); i++) {
-//				row.put(keys.get(i), list.get(i));
-//			}
-//			rowToInsert.add(row);
-//		}
-//		try {
-//			CKANUtils.datastoreResourceInsert(new URL(url), ver, api, resName, rowToInsert);
-//		} catch (CKANException e) {
-//			getLog(request).error(e);
-//			setErrorMessage(request, e.getLocalizedMessage(getLocale(request)));
-//		}
-//		getLog(request).debug("Insert " +  keys.size() + " rows into CKAN at " + url + " with data ApiKey: " + api + " ver: " + ver);
-//
+//		getLog(request).debug("Tentato hacking");
+//		setErrorMessage(request, "ACCESS DANIED");
 //		return new ExtViewResult(getControllerName());
+		String url 			= ParamUtil.getString(request, CONTR_PARAM_URL);
+		String api 			= ParamUtil.getString(request, CONTR_PARAM_API);
+		String ver 			= ParamUtil.getString(request, CONTR_PARAM_VERS);
+
+		String resName 		= ParamUtil.getString(request, CONTR_PARAM_RESOURCE_NAME);
+		List<List<String>> originalRows = null;
+		try {
+			originalRows = getRow(request);
+		} catch (Exception e) {
+			getLog(request).error(e);
+			setErrorMessage(request, e.getLocalizedMessage());
+			return new ExtViewResult(getControllerName());
+		}
+		List<String> keys = originalRows.get(0);
+		List<Map<String, Object>> rowToInsert = new ArrayList<Map<String, Object>>();
+		for (List<String> list : originalRows.subList(1, originalRows.size())) {
+			Map<String, Object> row = new HashMap<String, Object>();
+			for (int i = 0; i < list.size(); i++) {
+				row.put(keys.get(i), decodeList(list.get(i)));
+			}
+			rowToInsert.add(row);
+		}
+		try {
+			CKANUtils.datastoreResourceInsert(new URL(url), ver, api, resName, rowToInsert);
+		} catch (CKANException e) {
+			getLog(request).error(e);
+			setErrorMessage(request, e.getLocalizedMessage(getLocale(request)));
+		}
+		getLog(request).debug("Insert " +  keys.size() + " rows into CKAN at " + url + " with data ApiKey: " + api + " ver: " + ver);
+
+		return new ExtViewResult(getControllerName());
 	}
 
-
+	private Object decodeList(String val){
+		List<Object> ret = new ArrayList<Object>();
+		String tmp = null;
+		if(val.startsWith("[") && val.startsWith("]") ) {
+			tmp = val.substring(1, val.length() - 1).trim();
+			String[] tmpArr = tmp.split(",");
+			for (String s : tmpArr) {
+				if(s == null) continue;
+				s = s.trim();
+				if(val.startsWith("[") && val.startsWith("]") ) {
+					s = s.substring(1, s.length() - 1);
+				}
+				ret.add(decodeList(s));
+			}
+			return ret;
+		}
+		return val;
+	}
+	
 	protected List<List<String>> getRow(PortletRequest request) throws  Exception {
 		DatasetDto 				dset = getDatasetDto(request);
 		List<TransformationDto> tran = getTransformationDto(request);

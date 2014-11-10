@@ -48,9 +48,13 @@ if(Validator.isNull(err)){
 
 <%
 	if(enablePublish) {
+		@SuppressWarnings("unchecked")
 		Map<String, String>  languageMap 	= (Map<String, String>)   request.getAttribute(VIEW_ATTRIBUTE_LANGUAGE_MAP);
+		@SuppressWarnings("unchecked")
 		Map<Integer, String> typeMap 		= (Map<Integer, String>)  request.getAttribute(VIEW_ATTRIBUTE_TYPE_MAP);
+		@SuppressWarnings("unchecked")
 		List<CitadelCityInfo> locationList 	= (List<CitadelCityInfo>) request.getAttribute(VIEW_ATTRIBUTE_LOCATION_LIST);
+		@SuppressWarnings("unchecked")
 		List<String> licenceList 			= (List<String>) request.getAttribute(VIEW_ATTRIBUTE_LICENCE_LIST);
 %>
 		
@@ -104,7 +108,7 @@ if(Validator.isNull(err)){
 		        centered: true,
 		        destroyOnHide: false,
 		        headerContent: '<liferay-ui:message key="save-file-citadel-publish"/>',
-		        height: 400,
+		        height: 450,
 		        modal: true,
 		        render: '#modal',
 		        visible: true,

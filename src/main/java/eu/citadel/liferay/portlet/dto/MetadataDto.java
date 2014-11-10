@@ -25,6 +25,16 @@ public class MetadataDto {
 		context = new HashMap<String, String>();
 	}
 	
+	public String getNameAndCategory() {
+		StringBuilder ret = new StringBuilder();
+		ret.append(name);
+		if (category != null && category.entrySet().size() > 0) {
+			ret.append(" - ");
+			ret.append(category.entrySet().iterator().next().getValue());
+		}
+		return name;
+	}
+	
 	public String getName() {
 		return name;
 	}

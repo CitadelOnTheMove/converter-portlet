@@ -61,12 +61,13 @@ public class ContrSaveFileCitadel extends ContrSaveFileAbstarct {
 	public static final String CONTR_PARAM_SOURCE 					= "contr_param_source";
 	public static final String CONTR_PARAM_LICENSE 					= "contr_param_license";
 	public static final String CONTR_PARAM_LANGUAGE 				= "contr_param_language";
-	
-	
+
 	public static final String VIEW_ATTRIBUTE_LICENCE_LIST			= "view_attribute_licence_list";
 	public static final String VIEW_ATTRIBUTE_LOCATION_LIST			= "view_attribute_location_list";
 	public static final String VIEW_ATTRIBUTE_TYPE_MAP 				= "view_attribute_type_map";
 	public static final String VIEW_ATTRIBUTE_LANGUAGE_MAP 			= "view_attribute_language_map";
+	public static final String VIEW_ATTRIBUTE_ENABLE_PUBLISH		= "view_attribute_enable_publish";
+
 	public static final List<String> LICENCE_LIST 					= Arrays.asList(new String[]{"CC BY 4.0", "CC-0"});
 
 	private static final String CHARSET_UTF_8 						= "UTF-8";
@@ -132,6 +133,14 @@ public class ContrSaveFileCitadel extends ContrSaveFileAbstarct {
 		request.setAttribute(VIEW_ATTRIBUTE_LICENCE_LIST	, LICENCE_LIST);
 		request.setAttribute(VIEW_ATTRIBUTE_TYPE_MAP		, CitadelIndexConstants.TYPE_MAP);
 		request.setAttribute(VIEW_ATTRIBUTE_LANGUAGE_MAP	, CitadelIndexConstants.LANGUAGE_MAP);
+
+		if(Validator.isNull(getUserId(request)) || getUserId(request) <= 0) {
+			setWarningMessage(request, "save-file-citadel-invalid-id");
+			request.setAttribute(VIEW_ATTRIBUTE_ENABLE_PUBLISH	, false);
+		} else {
+			request.setAttribute(VIEW_ATTRIBUTE_ENABLE_PUBLISH	, true);
+		}
+		
 		file.delete();
 	}
 
@@ -155,6 +164,13 @@ public class ContrSaveFileCitadel extends ContrSaveFileAbstarct {
 		String source 		= ParamUtil.getString (request, CONTR_PARAM_SOURCE);
 		String license 		= ParamUtil.getString (request, CONTR_PARAM_LICENSE);
 		String language 	= ParamUtil.getString (request, CONTR_PARAM_LANGUAGE);
+
+		if(Validator.isNull(getUserId(request)) || getUserId(request) <= 0) {
+			getLog(request).error("Invalid id");
+			setErrorMessage(request, "save-file-citadel-invalid-id");
+			return new ExtViewResult(ConverterPortlet.CONTR_SAVE_FILE_CITADEL);
+		} 
+		
 		if(Validator.isNull(title)) {
 			getLog(request).error("Invalid title");
 			setErrorMessage(request, "Invalid title");
@@ -209,11 +225,11 @@ public class ContrSaveFileCitadel extends ContrSaveFileAbstarct {
 			config.setUserId					(getUserId(request));
 			
 			CitadelIndexUtil.uploadToCitadelIndex(config, new File(getResultFilePath(request)));
+			SessionMessages.add(request, "success");
 		} catch (ConverterException e) {
 			getLog(request).error(e);
 			setErrorMessage(request, e.getMessage());
 		}		
-		SessionMessages.add(request, "success");
 		return new ExtViewResult(ConverterPortlet.CONTR_SAVE_FILE_CITADEL);
 	}
 	

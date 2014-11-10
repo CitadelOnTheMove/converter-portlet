@@ -24,8 +24,12 @@
 <liferay-theme:defineObjects />
 
 <%
-	String message = (String) request.getAttribute(ConverterConstants.PAGE_ATTR_ERROR_MESSAGE);
-	if(Validator.isNotNull(message)) {
-		pageContext.getOut().write("<div class=\"alert alert-error\"> " + LanguageUtil.get(pageContext, message) + " </div>");
-	}
+String message = (String) request.getAttribute(ConverterConstants.PAGE_ATTR_ERROR_MESSAGE);
+if(Validator.isNotNull(message)) {
+	pageContext.getOut().write("<div class=\"alert alert-error\"> " + LanguageUtil.get(pageContext, message) + " </div>");
+}
+String messageWarn = (String) request.getAttribute(ConverterConstants.PAGE_ATTR_WARNING_MESSAGE);
+if(Validator.isNotNull(messageWarn)) {
+	pageContext.getOut().write("<div class=\"alert alert-warn\"> " + LanguageUtil.get(pageContext, messageWarn) + " </div>");
+}
 %>

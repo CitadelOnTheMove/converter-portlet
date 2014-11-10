@@ -65,7 +65,7 @@
 		<liferay-ui:search-container emptyResultsMessage="input-detail-csv-no-row-to-display" >
 			<liferay-ui:search-container-results results="${results}" total="${total}" />		
 		  	<liferay-ui:search-container-row className="java.util.List" modelVar="list" >
-				<citadel:search-container-column-list list="${list}" header="${page_attribute_header_list}"/>
+				<citadel:search-container-column-list list="${list}" header="${page_attribute_header_list}" lengthLimit="<%= ConverterConstants.MAX_TEXT_LENGTH %>"/>
 		  	</liferay-ui:search-container-row>
 		  	<liferay-ui:search-iterator paginate="false"/>
 		</liferay-ui:search-container>

@@ -13,6 +13,7 @@ String downloadLink 	= (String) renderRequest.getAttribute(VIEW_ATTRIBUTE_DOWNLO
 String err 				= (String) renderRequest.getAttribute(VIEW_ATTRIBUTE_MESSAGE_ERROR);
 String errKey			= (String) renderRequest.getAttribute(VIEW_ATTRIBUTE_KEY_ERROR);
 String errLink			= (String) renderRequest.getAttribute(VIEW_ATTRIBUTE_LINK_ERROR);
+@SuppressWarnings("unchecked")
 List<List<String>> res	= (List<List<String>>) renderRequest.getAttribute(VIEW_ATTRIBUTE_PREVIEW_LIST);
 if(Validator.isNull(err)){
 %>	
@@ -26,7 +27,7 @@ if(Validator.isNull(err)){
 	<liferay-ui:search-container emptyResultsMessage="save-file-no-row">
 		<liferay-ui:search-container-results results="<%= res %>" total="-1" />		
 	  	<liferay-ui:search-container-row className="java.util.List" modelVar="list" >
-			<citadel:search-container-column-list list="${list}" header="${view_attribute_header_list}"/>
+			<citadel:search-container-column-list list="${list}" header="${view_attribute_header_list}" lengthLimit="<%= ConverterConstants.MAX_TEXT_LENGTH %>"/>
 	  	</liferay-ui:search-container-row>
 	  	<liferay-ui:search-iterator paginate="false"/>
 	</liferay-ui:search-container>

@@ -1,3 +1,4 @@
+<%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="eu.citadel.converter.localization.Messages"%>
 <%@page import="eu.citadel.liferay.portlet.commons.ConverterConstants"%>
 <%@page import="eu.citadel.liferay.portlet.dto.MetadataDto"%>
@@ -26,7 +27,7 @@
 							<liferay-ui:icon src="${renderRequest.contextPath}/images/icons/mandatory.png" cssClass="required_icon" message="tooltip-icon-mandatory-true"/>
 				     	<% }%>
 				     	</liferay-ui:search-container-column-text>
-				     	<liferay-ui:search-container-column-text name="export-schema-target-field"		value="<%= dto.getName() != null ? dto.getName() : \"\" %>" title="<%= dto.getDescription() != null ? dto.getDescription() : \"\" %>"			/>
+				     	<liferay-ui:search-container-column-text name="export-schema-target-field"		value="<%= dto.getName() != null ? Messages.getString(dto.getName(), locale) : \"\" %>" title="<%= dto.getDescription() != null ? dto.getDescription() : \"\" %>"			/>
 				     	<liferay-ui:search-container-column-text name="export-schema-content"			cssClass="contentClass">	
 				     		<%if(dto.getFormat() != null){
 									List<formatElement> list = dto.getFormat();
@@ -218,7 +219,7 @@ var contentTreeChild = [ {
 			%>
 			{
 				id : '<%= c.getId() %>',
-				label : '<%= c.getName() %>',
+				label : '<%= StringUtils.abbreviate(Messages.getString(c.getNameAndCategory(), locale), ConverterConstants.MAX_TEXT_LENGTH) %>',
 				leaf : true,
 			} ,
 			<% } %>
