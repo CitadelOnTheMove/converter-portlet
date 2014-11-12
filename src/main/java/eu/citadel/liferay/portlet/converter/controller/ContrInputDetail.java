@@ -69,7 +69,7 @@ public class ContrInputDetail extends ConverterController {
 	public static Integer DEFAULT_ITEM_NUMBER				= 5;
 	
 	public static Integer DEFAULT_SHEET						= 0;
-	public static String  DEFAULT_DELIMITER					= CsvType.DEL_COMMA;
+	public static String  DEFAULT_DELIMITER					= CsvType.DEL_SEMICOLON;
 
 	
 	@Override
