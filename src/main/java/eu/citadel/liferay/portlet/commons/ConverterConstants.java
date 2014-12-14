@@ -5,7 +5,7 @@ package eu.citadel.liferay.portlet.commons;
  * @author ttrapanese
  */
 public class ConverterConstants {
-	public static final int MAX_TEXT_LENGTH 						= 20;
+	public static final int MAX_TEXT_LENGTH 						= 50;
 	
 	public static final String SESSION_ATTR_METADATA_LIST 			= "session_attr_dto_list";
 	public static final String SESSION_ATTR_TRANSFORMATION_LIST		= "session_attr_target_type";

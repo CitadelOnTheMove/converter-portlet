@@ -1,11 +1,13 @@
 package eu.citadel.liferay.portlet.dto;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import com.liferay.portal.kernel.util.Validator;
 
 import eu.citadel.converter.data.metadata.BasicMetadataUtils;
+import eu.citadel.converter.localization.Messages;
 
 /**
  * @author ttrapanese
@@ -78,6 +80,16 @@ public class MetadataDto {
 		return category;
 	}
 
+	public String getCategoryString(Locale locale) {
+		StringBuilder ret = new StringBuilder();
+		Map<String, String> map = getCategory();
+		for (String s : map.keySet()) {
+			ret.append(Messages.getString(BasicMetadataUtils.getMap(BasicMetadataUtils.CATEGORY).get(s), locale));
+		}
+		return ret.toString();
+	}
+
+	
 	public void setCategory(String key) {
 		if(Validator.isNotNull(key))
 			this.category.put(key, BasicMetadataUtils.getMap(BasicMetadataUtils.DEFAULT_CATEGORY).get(key));

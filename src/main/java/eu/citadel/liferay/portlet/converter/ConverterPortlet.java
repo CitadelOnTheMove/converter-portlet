@@ -41,7 +41,7 @@ public class ConverterPortlet extends ExtMVCPortlet {
 	public static final String CONTR_SEMANTIC_MATCH		= "semanticMatch";
 	public static final String CONTR_CHOOSE_EXPORT 		= "chooseExport";
 	public static final String CONTR_EXPORT_SCHEMA  	= "exportSchema";
-	public static final String CONTR_SAVE_FILE_CITADEL 	= "saveFileCitadel";
+	public static final String CONTR_SAVE_FILE_CITADEL 	= "saveFile";
 	public static final String CONTR_SAVE_FILE_LISBON 	= "saveFileLisbon";
 	public static final String CONTR_CKAN_EXPORT_CITADEL= "ckanExportCitadel";
 	public static final String CONTR_CKAN_EXPORT_LISBON	= "ckanExportLisbon";

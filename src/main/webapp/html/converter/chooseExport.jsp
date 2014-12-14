@@ -28,9 +28,83 @@
 	<liferay-portlet:actionURL var="previousUrl" 	name="chooseExport_previousStep"/>
 	<liferay-portlet:actionURL var="cancelUrl" 		name="chooseExport_cancel"/>
 
+	
+	<div class="yui3-skin-sam">
+	    <div id='modal'>
+	    </div>
+	</div>
+	
+	<aui:script use="draggable-tree, aui-modal">
+	
+	AUI().use(
+	  'aui-modal',
+	  function(A) {
+	  	
+	    var modal = new A.Modal(
+	      {
+	        bodyContent: '<liferay-ui:message key="choose-export-back-alert-message"/>',
+	        centered: true,
+	        destroyOnHide: false,
+	        headerContent: '<h3><liferay-ui:message key="message-warning"/></h3>',
+	        height: 200,
+	        modal: true,
+	        render: '#modal',
+	        visible: true,
+			draggable: false,
+	        width: 400,
+	        toolbars: {
+	          body: [
+	            {
+	              icon: 'icon-file',
+	              label: ''
+	            },
+	            {
+	              icon: 'icon-book',
+	              label: ''
+	            }
+	          ]
+	        },
+	      }
+	    );
+	
+	    modal.addToolbar(
+	      [
+	        {
+	          label: '<liferay-ui:message key="message-cancel"/>',
+	          on: {
+	            click: function() {
+	              modal.hide();
+	            }
+	          }
+	        },
+	        {
+	          label: '<liferay-ui:message key="message-ok"/>',
+	          on: {
+	            click: function() {
+	                window.location.href = '${previousUrl}';
+	            }
+	          }
+	        }
+	      ]
+	    );
+		modal.render();
+		
+		A.one('#modal .toolbar-content.yui3-widget.component.toolbar').hide();
+	    modal.hide();
+	
+		A.one('#<portlet:namespace/>btnBack').on('click', function(){
+			modal.show();
+		});
+	
+	  }
+	);
+	
+	</aui:script>
+
+
 	<aui:button-row  cssClass="citadel-navigation-menu">
 		<aui:button cssClass="btn-primary" value="navigation-cancel" 	href="${cancelUrl}"	/>
-		<aui:button cssClass="btn-primary" value="navigation-back" 	 	href="${previousUrl}"	/>
+		<aui:button cssClass="btn-primary" value="navigation-back" 	 	name="btnBack"/>
 		<aui:button cssClass="btn-primary" value="navigation-next" 		type="submit" 	  	/>
 		<aui:button cssClass="btn-primary" value="navigation-end" 	disabled="true"	  	/>
 	</aui:button-row>

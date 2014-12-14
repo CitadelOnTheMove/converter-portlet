@@ -1,3 +1,4 @@
+<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="java.util.Map.Entry"%>
 <%@page import="eu.citadel.converter.localization.Messages"%>
@@ -21,7 +22,7 @@
 					<liferay-ui:search-container-results results="${results}" total="${total}" />		
 				  	<liferay-ui:search-container-row className="eu.citadel.liferay.portlet.dto.MetadataDto" modelVar="dto" keyProperty="id" >
 				     	<liferay-ui:search-container-column-text name="semantic-match-source-column"	value="<%= StringUtils.abbreviate(dto.getName()   , ConverterConstants.MAX_TEXT_LENGTH) %>" />
-				     	<liferay-ui:search-container-column-text name="semantic-match-example"			value="<%= StringUtils.abbreviate(dto.getExample(), ConverterConstants.MAX_TEXT_LENGTH) %>"	/>
+				     	<liferay-ui:search-container-column-text name="semantic-match-example"			value="<%= dto.getExample() != null ? StringUtils.abbreviate(dto.getExample(), ConverterConstants.MAX_TEXT_LENGTH) : \"\" %>"	/>
 				     	<liferay-ui:search-container-column-text name="semantic-match-category"		cssClass="<%= \"categoryClass category_\" +dto.getId()	%>">
 					     	<input type="hidden" name="<portlet:namespace/><%= CATEGORY_PARAM_PREFIX + dto.getId() %>" class="input-text-category"/>
 				     	</liferay-ui:search-container-column-text>
@@ -63,7 +64,7 @@ AUI().use(
   'aui-modal',
   function(A) {
 	var treeLeft = 0;
-	AUI().on("scroll",function(e){
+	AUI().on("scroll", "resize",function(e){
 		var frmTop = document.getElementById('<portlet:namespace/>frmCategory').getBoundingClientRect().top;
 		if (frmTop < 30) {			
 			if(A.one('#categoryTree').getStyle('position') == 'inherit'){
@@ -153,7 +154,7 @@ AUI().use(
 			}
 		);
 		if(countNull > 0 ){
-			A.one('#modal .yui3-widget-bd.modal-body').text(countNull + ' <liferay-ui:message key="semantic-match-alert-message"/>');
+			A.one('#modal .yui3-widget-bd.modal-body').text(countNull + " <%= StringEscapeUtils.unescapeHtml(LanguageUtil.get(pageContext, "semantic-match-alert-message")) %>");
 			modal.show();
 		}else{
         	A.one('#<portlet:namespace/>frmCategory').submit();

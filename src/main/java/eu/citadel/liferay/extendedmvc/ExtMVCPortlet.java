@@ -28,7 +28,11 @@ public abstract class ExtMVCPortlet extends MVCPortlet {
 	public static final String MVC_REQUEST_PARAM 		= "extended_mvc_request_parameter";
 
 	public abstract ExtMVCFactory getFactory();
-	
+	@Override
+	public void init() throws PortletException {
+		// TODO Auto-generated method stub
+		super.init();
+	}
 	@Override
 	public void serveResource(ResourceRequest request, ResourceResponse response) throws IOException, PortletException {
 		String resourceId = request.getResourceID();

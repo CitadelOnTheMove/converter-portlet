@@ -166,8 +166,6 @@ public class ContrInputDetail extends ConverterController {
 		getLog(request).debug("csv itemNumber: "	 	+ String.valueOf(itemNumber));
 		getLog(request).debug("csv delimiter: " 		+ delimiter);
 
-		if(firstRowHeader) itemNumber++;
-		
 		CsvDataset dataset = null;
 		if(ds.getFileEntry() != null) { 
 			dataset = new CsvDataset(ds.getFileEntry().toPath());
@@ -189,18 +187,22 @@ public class ContrInputDetail extends ConverterController {
 				cb.setPath((Path) dataset.getInternalStateObject(DatasetStatus.STATUS_TEMPPATH));
 			} catch (DatasetException e1) {
 				getLog(request).error("error: " + e1.getLocalizedMessage(getLocale(request)));
-				getLog(request).debug("doXLSdView end");
+				getLog(request).debug("doCSVdView end");
 				return new ExtViewResult(ConverterPortlet.CONTR_INPUT_DETAIL, VIEW_UNSUPPORTET_KEY);
 			}
 		}
-		cb.setLines(itemNumber);
+		cb.setLines(itemNumber + (firstRowHeader ? 1 : 0));
 		cb.setCsvType(csvType);
 
 		List<List<String>> list = cb.build();
 
 		if(firstRowHeader && list.size() > 0){
 			request.setAttribute(PAGE_ATTRIBUTE_HEADER_LIST, list.get(0));
-			setResult(request, list.subList(1, list.size()));
+			if(list.size() > (itemNumber +1)){
+				setResult(request, list.subList(1, itemNumber + 1));
+			} else {
+				setResult(request, list.subList(1, list.size()));
+			}
 		}else{
 			setResult(request, list);
 		}

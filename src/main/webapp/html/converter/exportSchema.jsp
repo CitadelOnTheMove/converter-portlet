@@ -1,3 +1,4 @@
+<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@page import="org.apache.commons.lang.StringUtils"%>
 <%@page import="eu.citadel.converter.localization.Messages"%>
 <%@page import="eu.citadel.liferay.portlet.commons.ConverterConstants"%>
@@ -21,13 +22,13 @@
 			<aui:column columnWidth="70">
 				<liferay-ui:search-container emptyResultsMessage="export-schema-no-colum" id="export-schema-search-container" >
 					<liferay-ui:search-container-results results="${results}" total="${total}" />		
-				  	<liferay-ui:search-container-row className="eu.citadel.liferay.portlet.dto.TransformationDto" modelVar="dto" keyProperty="id">
+				  	<liferay-ui:search-container-row className="eu.citadel.liferay.portlet.dto.TransformationDto" modelVar="dto" keyProperty="id" escapedModel="true">
 				     	<liferay-ui:search-container-column-text name="export-schema-property"	align="center">
 				     	<% if(dto.isMandatory()) {%>
 							<liferay-ui:icon src="${renderRequest.contextPath}/images/icons/mandatory.png" cssClass="required_icon" message="tooltip-icon-mandatory-true"/>
 				     	<% }%>
 				     	</liferay-ui:search-container-column-text>
-				     	<liferay-ui:search-container-column-text name="export-schema-target-field"		value="<%= dto.getName() != null ? Messages.getString(dto.getName(), locale) : \"\" %>" title="<%= dto.getDescription() != null ? dto.getDescription() : \"\" %>"			/>
+				     	<liferay-ui:search-container-column-text name="export-schema-target-field"		value="<%= dto.getName() != null ? StringEscapeUtils.escapeHtml(Messages.getString(dto.getName(), locale)) : \"\" %>" title="<%= dto.getDescription() != null ? HtmlUtil.escape(dto.getDescription()) : \"\" %>"			/>
 				     	<liferay-ui:search-container-column-text name="export-schema-content"			cssClass="contentClass">	
 				     		<%if(dto.getFormat() != null){
 									List<formatElement> list = dto.getFormat();
@@ -82,8 +83,24 @@
 </div>
 
 <aui:script use="event-valuechange,draggable-tree,aui-modal">
+var MapCategory = {};
+<% 
+@SuppressWarnings("unchecked")
+List<MetadataDto> dtoList = (List<MetadataDto>) request.getAttribute(VIEW_PARAM_SOURCE_COLUMN_LIST);
+for(MetadataDto c : dtoList){ 
+%>
+MapCategory['<%= c.getName() %>'] = '<%= StringEscapeUtils.unescapeHtml(c.getCategoryString(locale)) %>';
+<% } %>
 
 
+function appendTitle(){
+	AUI().all('.tree-label').each(function(){ 
+		var catKey = this.text(); 
+	    if (MapCategory.hasOwnProperty(catKey)) {
+			this.attr('title', MapCategory[catKey]);
+	    }
+	})
+}
 
 function checkValidity(row){
 	  var validNode    = row.one('.valid_icon');
@@ -213,8 +230,6 @@ var contentTreeChild = [ {
 	children : [ {
 		children : [ 
 			<% 
-			@SuppressWarnings("unchecked")
-			List<MetadataDto> dtoList = (List<MetadataDto>) request.getAttribute(VIEW_PARAM_SOURCE_COLUMN_LIST);
 			for(MetadataDto c : dtoList){ 
 			%>
 			{
@@ -230,7 +245,7 @@ var contentTreeChild = [ {
 		children : [ 
 			{
 				id : 'custom-text',
-				label : 'Custom text',
+				label : '<liferay-ui:message key="export-schema-custom-text"/>',
 				leaf : true,
 			} ,
 	 	],
@@ -287,6 +302,10 @@ var contentTreeChild = [ {
 			  checkValidity(row);
 		  	}
   }).render();
+   setTimeout(function () {
+		appendTitle();
+	}, 3000);
+
 </aui:script>
 
 

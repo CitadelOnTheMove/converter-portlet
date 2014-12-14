@@ -44,6 +44,10 @@ import eu.citadel.liferay.portlet.converter.ConverterPortlet;
 import eu.citadel.liferay.portlet.converter.general.ContrSaveFileAbstarct;
 import eu.citadel.liferay.portlet.dto.DatasetDto;
 
+//NOTE: The method public void download(ResourceRequest request, ResourceResponse response) 
+//in this class is used during interaction with citadel
+//so don't change either the class mapping (saveFile) in ContrPortlet or the method signature
+
 /**
  * @author ttrapanese
  */

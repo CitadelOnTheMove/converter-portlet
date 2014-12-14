@@ -6,22 +6,23 @@
 <%@page import="static eu.citadel.liferay.portlet.converter.controller.ContrSaveFileCitadel.*"%>
 <%@include file="../../init.jsp"%>
 
-<liferay-portlet:actionURL var="previousUrl" 	name="saveFileCitadel_previousStep"/>
-<liferay-portlet:actionURL var="nextUrl" 		name="saveFileCitadel_nextStep"/>
-<liferay-portlet:actionURL var="cancelUrl" 		name="saveFileCitadel_cancel"/>
-<liferay-portlet:actionURL var="publishUrl" 	name="saveFileCitadel_publish"/>
+<liferay-portlet:actionURL var="previousUrl" 	name="saveFile_previousStep"/>
+<liferay-portlet:actionURL var="nextUrl" 		name="saveFile_nextStep"/>
+<liferay-portlet:actionURL var="cancelUrl" 		name="saveFile_cancel"/>
+<liferay-portlet:actionURL var="publishUrl" 	name="saveFile_publish"/>
 
 <%
 String downloadLink 	= (String)  renderRequest.getAttribute(VIEW_ATTRIBUTE_DOWNLOAD_LINK);
 String err 				= (String)  renderRequest.getAttribute(VIEW_ATTRIBUTE_MESSAGE_ERROR);
 String errKey			= (String)  renderRequest.getAttribute(VIEW_ATTRIBUTE_KEY_ERROR);
 String errLink			= (String)  renderRequest.getAttribute(VIEW_ATTRIBUTE_LINK_ERROR);
-boolean enablePublish 	= (Boolean) renderRequest.getAttribute(VIEW_ATTRIBUTE_ENABLE_PUBLISH);
+Boolean enablePublish 	= (Boolean) renderRequest.getAttribute(VIEW_ATTRIBUTE_ENABLE_PUBLISH);
+if(enablePublish == null) enablePublish = false;
 if(Validator.isNull(err)){
 %>	
 	<liferay-ui:success key="success" message="success"/>
 
-	<liferay-portlet:resourceURL id="saveFileCitadel_download" var="downloadUrl">
+	<liferay-portlet:resourceURL id="saveFile_download" var="downloadUrl">
 		<liferay-portlet:param name="<%= PAGE_PARAM_DOWNLOAD_LINK %>" value="<%= downloadLink %>"/>
 	</liferay-portlet:resourceURL>
 
@@ -36,7 +37,7 @@ if(Validator.isNull(err)){
 	</aui:button-row>
 	<aui:button-row>
 		<liferay-ui:message key="save-file-and-then"/>
-		<aui:button type="button" cssClass="btn-primary" value="save-file-publish"	name="btnPublish" disabled="<%= !enablePublish %>"/>
+		<aui:button type="button" cssClass="btn-primary" value="save-file-publish"	name="btnPublish" disabled="<%= !enablePublish.booleanValue() %>"/>
 		<%String link = HtmlUtil.escapeHREF("http://www.citadelonthemove.eu/en-us/opendata/uploadmydataset.aspx");%>
 		(<liferay-ui:message key="save-file-publish-sub"/><a href="<%= link %>"><liferay-ui:message key="save-file-publish-sub-here"/></a>)
 	</aui:button-row>
@@ -47,7 +48,7 @@ if(Validator.isNull(err)){
 </div>
 
 <%
-	if(enablePublish) {
+	if(enablePublish.booleanValue()) {
 		@SuppressWarnings("unchecked")
 		Map<String, String>  languageMap 	= (Map<String, String>)   request.getAttribute(VIEW_ATTRIBUTE_LANGUAGE_MAP);
 		@SuppressWarnings("unchecked")
